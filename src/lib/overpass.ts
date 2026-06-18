@@ -113,17 +113,21 @@ export function getCachedBuildings(key: string): BuildingSpec[] | null {
   return entry.buildings
 }
 
-export function setCachedBuildings(key: string, buildings: BuildingSpec[]): void {
-  cache.set(key, { buildings, ts: Date.now() })
+function tileKey(lat: number, lng: number, zoom = 14): string {
+  const x = Math.floor(((lng + 180) / 360) * 2 ** zoom)
+  const y = Math.floor(
+    ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) * 2 ** zoom,
+  )
+  return `${zoom}/${x}/${y}`
 }
 
-export async function fetchBuildings(
-  key: string,
+export async function fetchBuildingsForArea(
   lat: number,
   lng: number,
   radius: number,
   signal?: AbortSignal,
 ): Promise<BuildingSpec[]> {
+  const key = tileKey(lat, lng)
   const cached = getCachedBuildings(key)
   if (cached) return cached
 
@@ -138,12 +142,12 @@ export async function fetchBuildings(
   if (!resp.ok) {
     if (resp.status === 429) {
       await new Promise((r) => setTimeout(r, 3000))
-      return fetchBuildings(key, lat, lng, radius, signal)
+      return fetchBuildingsForArea(lat, lng, radius, signal)
     }
     throw new Error(`Overpass HTTP ${resp.status}`)
   }
 
   const buildings = parseOverpassResponse(await resp.json())
-  setCachedBuildings(key, buildings)
+  cache.set(key, { buildings, ts: Date.now() })
   return buildings
 }

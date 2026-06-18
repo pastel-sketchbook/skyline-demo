@@ -11,7 +11,9 @@ via the Overpass API. If Overpass is unreachable, it falls back to a
 deterministic generated skyline — the scene always renders.
 
 Buildings are colored by height band (6 discrete bands from teal →
-brick) so skyline structure is readable at a glance.
+brick) so skyline structure is readable at a glance. Hover any building
+to see its height and name; toggle the skyline on/off with the **Skyline**
+button in the control panel.
 
 ## Stack
 
@@ -53,8 +55,11 @@ task check:all     # Biome + Vitest + type-check + build
    While fetching, render deterministic generated filler as a placeholder.
 3. When real data arrives, swap filler for real OSM buildings. Footprint
    sizes are deterministic (derived from OSM element IDs).
-4. Assign each building its height-band color and extrude it in meters.
-5. Render with deck.gl over a MapLibre basemap
+4. As you pan the map, new areas are fetched and accumulated (400 m
+   haversine threshold, deduplicated by OSM ID). Tiled cache avoids
+   re-fetching visited areas.
+5. Assign each building its height-band color and extrude it in meters.
+6. Render with deck.gl over a MapLibre basemap
    ([`src/components/SkylineDeck.tsx`](src/components/SkylineDeck.tsx)).
 
 Adding a new city is one typed entry in `src/data/cities.ts`.

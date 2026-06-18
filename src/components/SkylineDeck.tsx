@@ -47,12 +47,17 @@ interface SkylineDeckProps {
   viewState: MapViewState
   onViewStateChange: (viewState: MapViewState) => void
   basemap: BasemapMode
+  showSkyline: boolean
 }
 
 function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
   if (!object) return null
+  const label = object.name && object.name !== 'Building' ? object.name : null
+  const parts = [`<strong>${object.height} m</strong>`]
+  if (label) parts.unshift(`<span style="color:#6b7280">${label}</span>`)
+  if (object.landmark) parts.push('<span style="color:#d97706">landmark</span>')
   return {
-    html: `<strong>${object.name}</strong><br/>${object.height} m${object.landmark ? ' · landmark' : ''}`,
+    html: parts.join('<br/>'),
     style: {
       background: 'rgba(255, 255, 255, 0.88)',
       color: '#2c4a4e',
@@ -65,14 +70,20 @@ function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
   }
 }
 
-export default function SkylineDeck({ buildings, viewState, onViewStateChange, basemap }: SkylineDeckProps) {
+export default function SkylineDeck({
+  buildings,
+  viewState,
+  onViewStateChange,
+  basemap,
+  showSkyline,
+}: SkylineDeckProps) {
   const mapStyle = basemap === 'satellite' ? SATELLITE_STYLE : VECTOR_STYLE
 
   const layers = useMemo(
     () => [
       new PolygonLayer<SkylineBuilding>({
         id: 'skyline-buildings',
-        data: buildings,
+        data: showSkyline ? buildings : [],
         extruded: true,
         wireframe: false,
         pickable: true,
@@ -91,7 +102,7 @@ export default function SkylineDeck({ buildings, viewState, onViewStateChange, b
         },
       }),
     ],
-    [buildings],
+    [buildings, showSkyline],
   )
 
   return (

@@ -135,6 +135,12 @@ skyline-demo/
 6. Render the extruded `PolygonLayer` with deck.gl over a MapLibre
    basemap (Photo: ESRI satellite or Map: CARTO vector), controlled by
    a pitched/orbiting camera.
+7. As the user pans, new viewport areas are fetched and accumulated
+   (400 m haversine threshold, dedup by OSM ID). A tile-keyed cache
+   (zoom 14, 1 h TTL) avoids re-fetching visited areas.
+8. **Skyline On/Off** toggle in the CityPicker panel clears the layer
+   data to reveal the bare basemap. Height and name still appear on
+   hover via the tooltip.
 
 ## CORE DEVELOPMENT PRINCIPLES
 

@@ -15,6 +15,8 @@ interface CityPickerProps {
   onBearingChange: (bearing: number) => void
   onReset: () => void
   onBasemapChange: (mode: BasemapMode) => void
+  showSkyline: boolean
+  onToggleSkyline: () => void
 }
 
 export default function CityPicker({
@@ -28,33 +30,31 @@ export default function CityPicker({
   onBearingChange,
   onReset,
   onBasemapChange,
+  showSkyline,
+  onToggleSkyline,
 }: CityPickerProps) {
   return (
-    <div className="card-frost w-72 p-4">
+    <div className="card-frost w-60 p-3 space-y-2">
       {/* ── Header ──────────────────────────────────────────── */}
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cyan-500 text-white">
-          <Building2 size={15} strokeWidth={1.8} />
+      <div className="flex items-start gap-2">
+        <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-cyan-500 text-white">
+          <Building2 size={13} strokeWidth={1.8} />
         </span>
         <div className="min-w-0">
-          <p className="font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">deck.gl skyline</p>
-          <h1 className="font-serif text-xl leading-tight font-bold text-warm-600 tracking-tight">{city.name}</h1>
+          <p className="font-mono text-[9px] font-medium tracking-widest text-warm-400 uppercase">deck.gl skyline</p>
+          <h1 className="font-serif text-base leading-tight font-bold text-warm-600 tracking-tight">{city.name}</h1>
         </div>
       </div>
 
-      <p className="mt-1.5 pl-[38px] text-[13px] leading-snug text-warm-400">{city.blurb}</p>
-
-      <div className="divider-subtle my-3" />
-
       {/* ── City selector ───────────────────────────────────── */}
-      <label className="flex flex-col gap-1">
-        <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">
-          <Layers size={12} strokeWidth={1.8} />
+      <label className="flex flex-col gap-0.5">
+        <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-widest text-warm-400 uppercase">
+          <Layers size={10} strokeWidth={1.8} />
           City
         </span>
         <div className="relative">
           <select
-            className="w-full cursor-pointer appearance-none rounded-lg border border-warm-300 bg-paper-50 py-1.5 pr-8 pl-3 text-sm text-warm-600 outline-none transition-colors focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30"
+            className="w-full cursor-pointer appearance-none rounded-lg border border-warm-300 bg-paper-50 py-1 pr-6 pl-2 text-xs text-warm-600 outline-none transition-colors focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400/30"
             value={city.id}
             onChange={(event) => onSelectCity(event.target.value)}
           >
@@ -65,59 +65,61 @@ export default function CityPicker({
             ))}
           </select>
           <ChevronDown
-            size={14}
+            size={12}
             strokeWidth={1.8}
-            className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 text-warm-400"
+            className="pointer-events-none absolute top-1/2 right-1.5 -translate-y-1/2 text-warm-400"
           />
         </div>
       </label>
 
-      <div className="divider-subtle my-3" />
-
-      {/* ── Basemap toggle ──────────────────────────────────── */}
-      <div className="flex flex-col gap-1">
-        <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">
-          <MapIcon size={12} strokeWidth={1.8} />
-          Basemap
-        </span>
-        <div className="flex gap-1.5">
-          <button
-            type="button"
-            className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-medium transition-colors ${
-              basemap === 'satellite'
-                ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
-                : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
-            }`}
-            onClick={() => onBasemapChange('satellite')}
-          >
-            <Satellite size={12} strokeWidth={1.8} />
-            Photo
-          </button>
-          <button
-            type="button"
-            className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-medium transition-colors ${
-              basemap === 'vector'
-                ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
-                : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
-            }`}
-            onClick={() => onBasemapChange('vector')}
-          >
-            <MapIcon size={12} strokeWidth={1.8} />
-            Map
-          </button>
-        </div>
+      {/* ── Basemap + Skyline ────────────────────────────────── */}
+      <div className="flex gap-1.5">
+        <button
+          type="button"
+          className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border py-1 text-xs font-medium transition-colors ${
+            basemap === 'satellite'
+              ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
+              : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
+          }`}
+          onClick={() => onBasemapChange('satellite')}
+        >
+          <Satellite size={11} strokeWidth={1.8} />
+          Photo
+        </button>
+        <button
+          type="button"
+          className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border py-1 text-xs font-medium transition-colors ${
+            basemap === 'vector'
+              ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
+              : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
+          }`}
+          onClick={() => onBasemapChange('vector')}
+        >
+          <MapIcon size={11} strokeWidth={1.8} />
+          Map
+        </button>
+        <button
+          type="button"
+          className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg border py-1 text-xs font-medium transition-colors ${
+            showSkyline
+              ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
+              : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
+          }`}
+          onClick={onToggleSkyline}
+        >
+          <Building2 size={11} strokeWidth={1.8} />
+          {showSkyline ? 'On' : 'Off'}
+        </button>
       </div>
 
-      <div className="divider-subtle my-3" />
-
       {/* ── Pitch slider ────────────────────────────────────── */}
-      <label className="flex flex-col gap-1">
-        <span className="flex items-center justify-between font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">
-          <span className="flex items-center gap-1.5">
-            <Eye size={12} strokeWidth={1.8} />
+      <label className="flex flex-col gap-0.5">
+        <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-widest text-warm-400 uppercase">
+          <span className="flex items-center gap-1">
+            <Eye size={10} strokeWidth={1.8} />
             Pitch
           </span>
-          <span className="font-sans text-[11px] tabular-nums text-cyan-600">{Math.round(pitch)}°</span>
+          <span className="font-sans text-[10px] tabular-nums text-cyan-600">{Math.round(pitch)}°</span>
         </span>
         <input
           type="range"
@@ -131,13 +133,13 @@ export default function CityPicker({
       </label>
 
       {/* ── Bearing slider ──────────────────────────────────── */}
-      <label className="mt-2 flex flex-col gap-1">
-        <span className="flex items-center justify-between font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">
-          <span className="flex items-center gap-1.5">
-            <Compass size={12} strokeWidth={1.8} />
+      <label className="flex flex-col gap-0.5">
+        <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-widest text-warm-400 uppercase">
+          <span className="flex items-center gap-1">
+            <Compass size={10} strokeWidth={1.8} />
             Bearing
           </span>
-          <span className="font-sans text-[11px] tabular-nums text-cyan-600">{Math.round(bearing)}°</span>
+          <span className="font-sans text-[10px] tabular-nums text-cyan-600">{Math.round(bearing)}°</span>
         </span>
         <input
           type="range"
@@ -150,17 +152,15 @@ export default function CityPicker({
         />
       </label>
 
-      <div className="divider-subtle my-3" />
-
       {/* ── Footer ──────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] tabular-nums text-warm-400">{buildingCount} buildings</span>
+      <div className="flex items-center justify-between pt-0.5">
+        <span className="font-mono text-[10px] tabular-nums text-warm-400">{buildingCount} buildings</span>
         <button
           type="button"
-          className="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-cyan-600 transition-colors hover:bg-cyan-100 hover:text-cyan-600 active:bg-cyan-500/20"
+          className="inline-flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium text-cyan-600 transition-colors hover:bg-cyan-100 hover:text-cyan-600 active:bg-cyan-500/20"
           onClick={onReset}
         >
-          <RotateCcw size={12} strokeWidth={1.8} />
+          <RotateCcw size={11} strokeWidth={1.8} />
           Reset
         </button>
       </div>
