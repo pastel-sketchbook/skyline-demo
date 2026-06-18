@@ -33,7 +33,7 @@ function makeViewState(city: City): MapViewState {
 export default function App() {
   const [cityId, setCityId] = useState(DEFAULT_CITY_ID)
   const [viewState, setViewState] = useState<MapViewState>(() => makeViewState(getCity(DEFAULT_CITY_ID)))
-  const [basemap, setBasemap] = useState<BasemapMode>('satellite')
+  const [basemap, setBasemap] = useState<BasemapMode>('vector')
 
   const city = getCity(cityId)
 

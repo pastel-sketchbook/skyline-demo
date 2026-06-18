@@ -77,6 +77,28 @@ function lerpChannel(a: number, b: number, t: number): number {
   return Math.round(a + (b - a) * t)
 }
 
+/** Height bands with distinct colors. Each band is [min, max, color]. */
+const HEIGHT_BANDS: [number, number, Rgb][] = [
+  [0, 30, [235, 210, 180]],
+  [30, 80, [240, 185, 120]],
+  [80, 150, [235, 155, 80]],
+  [150, 250, [220, 120, 55]],
+  [250, 400, [200, 80, 45]],
+  [400, Infinity, [170, 60, 40]],
+]
+
+/**
+ * Map a height to a color from discrete height bands.
+ * Each band has a fixed color — short buildings are light/warm,
+ * tall buildings dark/rich, creating a visible height hierarchy.
+ */
+export function heightToBandColor(height: number): Rgb {
+  for (const [lo, hi, color] of HEIGHT_BANDS) {
+    if (height >= lo && height < hi) return color
+  }
+  return HEIGHT_BANDS[HEIGHT_BANDS.length - 1][2]
+}
+
 /** Default low → high gradient (light peach → deep orange). */
 export const DEFAULT_LOW_COLOR: Rgb = [255, 200, 150]
 export const DEFAULT_HIGH_COLOR: Rgb = [220, 110, 50]
@@ -178,22 +200,15 @@ export function generateBuildings({
 }
 
 /** Convert a building spec into a deck.gl-ready feature with footprint + color. */
-export function toSkylineBuilding(spec: BuildingSpec, minHeight: number, maxHeight: number): SkylineBuilding {
+export function toSkylineBuilding(spec: BuildingSpec): SkylineBuilding {
   return {
     ...spec,
     footprint: rectFootprint(spec, spec.width, spec.depth),
-    color: heightToColor(spec.height, minHeight, maxHeight),
+    color: heightToBandColor(spec.height),
   }
 }
 
-/** Build the full set of deck.gl features from raw specs (computes height domain). */
+/** Build the full set of deck.gl features from raw specs. */
 export function buildSkyline(specs: BuildingSpec[]): SkylineBuilding[] {
-  if (specs.length === 0) return []
-  let min = Number.POSITIVE_INFINITY
-  let max = Number.NEGATIVE_INFINITY
-  for (const spec of specs) {
-    if (spec.height < min) min = spec.height
-    if (spec.height > max) max = spec.height
-  }
-  return specs.map((spec) => toSkylineBuilding(spec, min, max))
+  return specs.map(toSkylineBuilding)
 }

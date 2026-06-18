@@ -5,6 +5,7 @@ import {
   DEFAULT_HIGH_COLOR,
   DEFAULT_LOW_COLOR,
   generateBuildings,
+  heightToBandColor,
   heightToColor,
   mulberry32,
   rectFootprint,
@@ -59,6 +60,25 @@ describe('heightToColor', () => {
 
   it('falls back to the low color for a degenerate (zero-span) domain', () => {
     expect(heightToColor(200, 200, 200)).toEqual(DEFAULT_LOW_COLOR)
+  })
+})
+
+describe('heightToBandColor', () => {
+  it('returns distinct colors for different height bands', () => {
+    const colors = [0, 29, 30, 79, 80, 149, 150, 249, 250, 399, 400, 1000].map(heightToBandColor)
+    // Each pair should share the same band color.
+    expect(colors[0]).toEqual(colors[1])
+    expect(colors[2]).toEqual(colors[3])
+    expect(colors[4]).toEqual(colors[5])
+    expect(colors[6]).toEqual(colors[7])
+    expect(colors[8]).toEqual(colors[9])
+    expect(colors[10]).toEqual(colors[11])
+    // Adjacent bands should differ.
+    expect(colors[1]).not.toEqual(colors[2])
+    expect(colors[3]).not.toEqual(colors[4])
+    expect(colors[5]).not.toEqual(colors[6])
+    expect(colors[7]).not.toEqual(colors[8])
+    expect(colors[9]).not.toEqual(colors[10])
   })
 })
 
