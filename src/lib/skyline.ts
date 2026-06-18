@@ -77,14 +77,14 @@ function lerpChannel(a: number, b: number, t: number): number {
   return Math.round(a + (b - a) * t)
 }
 
-/** Height bands with distinct colors. Each band is [min, max, color]. */
+/** Height bands with distinct colors. Cool→warm gradient as height increases. */
 const HEIGHT_BANDS: [number, number, Rgb][] = [
-  [0, 30, [235, 210, 180]],
-  [30, 80, [240, 185, 120]],
-  [80, 150, [235, 155, 80]],
-  [150, 250, [220, 120, 55]],
-  [250, 400, [200, 80, 45]],
-  [400, Infinity, [170, 60, 40]],
+  [0, 30, [180, 210, 215]],
+  [30, 80, [160, 200, 180]],
+  [80, 150, [220, 190, 140]],
+  [150, 250, [235, 150, 90]],
+  [250, 400, [210, 100, 65]],
+  [400, Infinity, [180, 65, 55]],
 ]
 
 /**
