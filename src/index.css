@@ -1,0 +1,85 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: pastel --default;
+}
+
+@theme {
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: "IBM Plex Serif", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* 60 : 30 : 10 palette tokens */
+  --color-paper-50: #fdfcfa;
+  --color-paper-100: #f9f7f3;
+  --color-paper-200: #f4f1ec;
+  --color-warm-600: #6b6560;
+  --color-warm-400: #9e9690;
+  --color-warm-300: #c4bcb4;
+  --color-cyan-500: #3aafb9;
+  --color-cyan-400: #64c5cc;
+  --color-cyan-600: #2a8f97;
+  --color-cyan-100: #ddf3f4;
+}
+
+/* Override daisyUI pastel to a cohesive cyan-on-cream system */
+[data-theme="pastel"] {
+  --p: 186 52% 48%; /* cyan primary */
+  --pf: 186 56% 38%; /* primary focus */
+  --pc: 0 0% 100%; /* primary content — white */
+  --s: 180 30% 58%; /* teal secondary */
+  --sf: 180 35% 48%; /* secondary focus */
+  --sc: 0 0% 100%; /* secondary content */
+  --a: 174 40% 47%; /* cyan-teal accent */
+  --af: 174 46% 37%; /* accent focus */
+  --ac: 0 0% 100%; /* accent content */
+  --b1: 37 30% 97%; /* base-100: warm white */
+  --b2: 35 25% 93%; /* base-200: light parchment */
+  --b3: 33 20% 89%; /* base-300: deeper parchment */
+  --bc: 30 12% 28%; /* base-content: warm charcoal */
+  --n: 30 8% 42%; /* neutral: warm gray */
+  --nf: 30 10% 34%; /* neutral focus */
+  --nc: 37 30% 97%; /* neutral content */
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* ── 60% dominant: warm paper-tint gradient ─────────────────────── */
+.bg-paper {
+  background: linear-gradient(
+    155deg,
+    var(--color-paper-50) 0%,
+    var(--color-paper-100) 40%,
+    var(--color-paper-200) 80%,
+    var(--color-paper-100) 100%
+  );
+}
+
+/* ── 30% secondary: frosted card surface ────────────────────────── */
+.card-frost {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--color-warm-300);
+  border-radius: 0.75rem;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* ── Divider ────────────────────────────────────────────────────── */
+.divider-subtle {
+  height: 1px;
+  background: var(--color-warm-300);
+  opacity: 0.5;
+}

@@ -1,0 +1,77 @@
+version: "3"
+
+# ---------------------------------------------------------------------------
+# Task automation for skyline-demo.
+# A deck.gl city-skyline visualization (e.g. Seoul). bun + Vite + React.
+# ---------------------------------------------------------------------------
+
+tasks:
+  default:
+    desc: "List available tasks"
+    cmds:
+      - task --list
+    silent: true
+
+  # --- Setup ---
+  install:
+    desc: "Install dependencies with bun"
+    cmds:
+      - bun install
+
+  # --- Quality Gates ---
+  check:all:
+    desc: "Run all quality gates (Biome format + lint + Vitest + build)"
+    cmds:
+      - bun run check:all
+
+  format:
+    desc: "Auto-format sources with Biome"
+    cmds:
+      - bun run format
+
+  lint:
+    desc: "Run Biome lint"
+    cmds:
+      - bun run lint
+
+  type-check:
+    desc: "Type-check with the TypeScript compiler"
+    cmds:
+      - bun run type-check
+
+  test:
+    desc: "Run Vitest once"
+    cmds:
+      - bun run test
+
+  test:watch:
+    desc: "Run Vitest in watch mode"
+    cmds:
+      - bun run test:watch
+
+  test:cov:
+    desc: "Run Vitest with coverage"
+    cmds:
+      - bun run test:cov
+
+  # --- Run ---
+  web:dev:
+    desc: "Start the Vite dev server"
+    cmds:
+      - bun run dev
+
+  web:build:
+    desc: "Production build"
+    cmds:
+      - bun run build
+
+  web:preview:
+    desc: "Preview the production build"
+    cmds:
+      - bun run preview
+
+  # --- Housekeeping ---
+  clean:
+    desc: "Remove build artifacts and coverage"
+    cmds:
+      - rm -rf dist coverage
