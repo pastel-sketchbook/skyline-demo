@@ -1,24 +1,16 @@
 import type { MapViewState } from '@deck.gl/core'
 import { Globe, KeyRound, Layers } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import CityPicker from '@/components/CityPicker'
 import SkylineDeck from '@/components/SkylineDeck'
-import { BUILDINGS as DUBAI_BUILDINGS } from '@/data/buildings/dubai'
-import { BUILDINGS as NYC_BUILDINGS } from '@/data/buildings/new-york'
-import { BUILDINGS as SEOUL_BUILDINGS } from '@/data/buildings/seoul'
 import type { City } from '@/data/cities'
 import { DEFAULT_CITY_ID, getCity } from '@/data/cities'
+import { fetchBuildings } from '@/lib/overpass'
 import type { BuildingSpec } from '@/lib/skyline'
 import { buildSkyline, generateBuildings } from '@/lib/skyline'
 
 export type BasemapMode = 'satellite' | 'vector'
-
-const REAL_BUILDINGS: Record<string, BuildingSpec[]> = {
-  seoul: SEOUL_BUILDINGS,
-  'new-york': NYC_BUILDINGS,
-  dubai: DUBAI_BUILDINGS,
-}
 
 function makeViewState(city: City): MapViewState {
   return {
@@ -34,17 +26,30 @@ export default function App() {
   const [cityId, setCityId] = useState(DEFAULT_CITY_ID)
   const [viewState, setViewState] = useState<MapViewState>(() => makeViewState(getCity(DEFAULT_CITY_ID)))
   const [basemap, setBasemap] = useState<BasemapMode>('vector')
+  const [realBuildings, setRealBuildings] = useState<BuildingSpec[] | null>(null)
 
   const city = getCity(cityId)
 
-  const buildings = useMemo(() => {
-    const real = REAL_BUILDINGS[city.id]
-    const filler =
-      real.length > 0
-        ? real
-        : generateBuildings({ center: city.districtCenter, count: city.fillerCount, seed: city.seed })
-    return buildSkyline([...city.landmarks, ...filler])
+  useEffect(() => {
+    setRealBuildings(null)
+    const ac = new AbortController()
+    const { lat, lng } = city.districtCenter
+    fetchBuildings(city.id, lat, lng, 1400, ac.signal)
+      .then(setRealBuildings)
+      .catch(() => {})
+    return () => ac.abort()
   }, [city])
+
+  const buildings = useMemo(() => {
+    const filler =
+      realBuildings ??
+      generateBuildings({
+        center: city.districtCenter,
+        count: city.fillerCount,
+        seed: city.seed,
+      })
+    return buildSkyline([...city.landmarks, ...filler])
+  }, [city, realBuildings])
 
   const handleSelectCity = (id: string) => {
     setCityId(id)
@@ -90,6 +95,8 @@ export default function App() {
         </span>
         <span className="text-warm-300">·</span>
         <span className="tabular-nums">{buildings.length} buildings</span>
+        <span className="text-warm-300">·</span>
+        <span className="tabular-nums">{realBuildings ? 'OSM live' : 'generated'}</span>
       </div>
     </main>
   )

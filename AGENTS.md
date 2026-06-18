@@ -16,11 +16,13 @@ auditable.
 - Write idiomatic React 19 with functional components and hooks
 - Keep the project minimal: city data + skyline geometry + a deck.gl scene
 - Follow TDD principles: the pure skyline geometry helpers (footprint
-  generation, height→color, deterministic building generation) are the
-  pieces with non-trivial logic — they must have tests
+  generation, height→color, deterministic building generation, Overpass
+  response parsing) are the pieces with non-trivial logic — they must
+  have tests
 - Keep per-city data as typed modules under `src/data/`, one entry per city
-- Optionally fetch real building footprints from OSM Overpass at build time
-  via `bun run build:data` before `bun run build`
+- Fetch real building footprints from OSM Overpass at **runtime** (on app
+  load); fall back to deterministic generated filler if Overpass is
+  unreachable
 - Render with **deck.gl** (`@deck.gl/react` + `PolygonLayer`, extruded)
   over a **MapLibre** basemap (ESRI satellite or CARTO vector) that needs
   **no API key**
@@ -36,8 +38,8 @@ and adherence to TypeScript + React best practices.
 - Check that heights are extruded in **meters** and footprints are valid
   closed rings of `[lng, lat]` pairs
 - Confirm generated filler buildings are **deterministic** (seeded RNG) so
-  the scene and tests are stable. Real building data fetched from OSM Overpass
-  uses deterministic footprint sizes derived from OSM element IDs.
+  the scene and tests are stable. Real building data fetched from OSM
+  Overpass uses deterministic footprint sizes derived from OSM element IDs.
 - Validate the demo runs with **no secrets / no API keys**
 - Run `bun run check:all` (Biome lint + format + Vitest + build)
 
@@ -50,13 +52,17 @@ It:
 
 - Loads per-city data (a map center + initial camera + a set of landmark
   buildings) from typed modules in `src/data/`
-- Generates a deterministic cluster of filler buildings around each city's
-  skyline district so the scene reads as a real skyline
+- Fetches real building footprints from OSM Overpass at runtime via
+  `src/lib/overpass.ts` (cached in-memory, 1-hour TTL)
+- Falls back to a deterministic cluster of filler buildings when Overpass
+  is unreachable, so the scene always renders
 - Converts each building (center + footprint size + height in meters) into
   an extruded deck.gl `PolygonLayer` feature
-- Colors buildings by height with a configurable gradient
-- Lets the user switch between cities and tweak the camera (pitch / bearing)
-- Renders over a free MapLibre CARTO basemap (no API key required)
+- Colors buildings by **height band** (6 discrete bands from teal→brick)
+- Lets the user switch between cities, toggle Photo/Map basemap, and tweak
+  the camera (pitch / bearing)
+- Renders over a free MapLibre basemap (ESRI satellite or CARTO vector —
+  no API key required)
 
 **Lineage:**
 - `~/projects/react/aria-demo` — React + deck.gl reference implementation
@@ -64,8 +70,6 @@ It:
   building-extrusion approach, simplified to a standalone, key-free scene.
 
 **What this tool does NOT do:**
-- Fetch live building footprints from OSM / Overpass (data is static +
-  deterministically generated)
 - Require Google Maps, Mapbox, or any keyed basemap provider
 - Persist anything to a database or backend
 - Provide routing-grade geographic accuracy (footprints are approximations)
@@ -87,19 +91,24 @@ skyline-demo/
 ├── tsconfig.node.json
 ├── vite.config.ts            # Vite + React + Tailwind plugin
 ├── index.html
+├── scripts/
+│   └── fetch-buildings.ts    # Optional build-time Overpass pre-fetch
 └── src/
     ├── main.tsx              # React bootstrap
     ├── App.tsx               # Layout: skyline scene + controls
     ├── index.css             # Tailwind + daisyUI themes
     ├── vite-env.d.ts
     ├── data/
-    │   └── cities.ts         # Per-city center, camera, landmark buildings
+    │   ├── cities.ts         # Per-city center, camera, landmark buildings
+    │   └── buildings/        # Optional build-time fetched data (git-committed)
     ├── lib/
     │   ├── skyline.ts        # Pure geometry: footprint, color, generator
-    │   └── skyline.test.ts   # Unit tests for the pure helpers
+    │   ├── skyline.test.ts   # Tests for geometry helpers
+    │   ├── overpass.ts       # Runtime OSM Overpass client with cache
+    │   └── overpass.test.ts  # Tests for Overpass response parser
     └── components/
         ├── SkylineDeck.tsx   # DeckGL + MapLibre basemap + PolygonLayer
-        └── CityPicker.tsx    # City + camera controls
+        └── CityPicker.tsx    # City + camera + basemap controls
 ```
 
 **Core Components:**
@@ -107,34 +116,43 @@ skyline-demo/
 | Component | Purpose |
 |---|---|
 | `data/cities.ts` | Per-city center, initial camera, landmark buildings |
-| `lib/skyline.ts` | Footprint generation, height→color, seeded generator |
+| `lib/skyline.ts` | Footprint generation, height→band color, seeded generator |
+| `lib/overpass.ts` | Runtime Overpass API client with in-memory cache |
 | `SkylineDeck` | deck.gl scene: extruded `PolygonLayer` over MapLibre |
-| `CityPicker` | Switch city + adjust pitch / bearing |
+| `CityPicker` | Switch city + adjust pitch / bearing + Photo/Map toggle |
 
 **Rendering Flow:**
 1. Pick a city from `src/data/cities.ts` (center + camera + landmarks)
-2. Generate deterministic filler buildings around the skyline district
-   (seeded RNG → stable scene + stable tests)
-3. Convert each building (center, width/depth, height in meters) into an
-   extruded polygon: `footprint = [lng,lat] ring`, `elevation = height`
-4. Color each building by height via a low→high gradient
-5. Render the extruded `PolygonLayer` with deck.gl over a MapLibre CARTO
-   basemap, controlled by a pitched/orbiting camera
+2. On city select, kick off an OSM Overpass fetch for real building data
+   (`src/lib/overpass.ts`). While fetching, render deterministic generated
+   filler as a placeholder.
+3. When real data arrives, swap filler for real OSM buildings with
+   deterministic footprint sizes derived from OSM element IDs.
+4. Assign each building its height-band color (teal → mint → golden →
+   coral → terracotta → brick).
+5. Convert each building (center, width/depth, height in meters) into an
+   extruded polygon: `footprint = [lng,lat] ring`, `elevation = height`.
+6. Render the extruded `PolygonLayer` with deck.gl over a MapLibre
+   basemap (Photo: ESRI satellite or Map: CARTO vector), controlled by
+   a pitched/orbiting camera.
 
 ## CORE DEVELOPMENT PRINCIPLES
 
 - **No Surprises**: Heights extrude in meters; footprints are closed rings
   of `[lng, lat]`. Document any unit conversions inline.
-- **Deterministic Data**: Filler buildings come from a seeded RNG. The same
-  city always yields the same skyline. Never use `Math.random()` for scene
-  geometry.
+- **Deterministic Data**: Filler buildings come from a seeded RNG. Real
+  OSM buildings use deterministic footprint sizes from OSM element IDs.
+  Never use `Math.random()` for scene geometry.
 - **Data, Not Code**: Cities are *data* in `src/data/cities.ts`. Adding a
   new city = adding one typed entry.
+- **Progressive Enhancement**: Show generated filler immediately, then
+  upgrade to real OSM data asynchronously. The scene always renders.
 - **Resilient Rendering**: The deck.gl layer must render even if the
-  basemap fails to load. Guard WebGL/feature access.
+  basemap or Overpass fails to load. Guard WebGL/feature access.
 - **Testing**: Unit tests for the pure helpers in `lib/skyline.ts`
   (footprint ring shape, height→color endpoints + clamping, generator
-  determinism and count).
+  determinism and count) and `lib/overpass.ts` (OSM response parsing,
+  height derivation, sorting).
 - **No Keys**: The demo must run with zero secrets. Never introduce a
   basemap or service that requires an API key.
 
@@ -144,7 +162,7 @@ skyline-demo/
 |---|---|
 | UI framework | React 19 (function components + hooks) |
 | 3D rendering | deck.gl 9 (`@deck.gl/react`, `@deck.gl/layers`) |
-| Basemap | MapLibre GL + `react-map-gl/maplibre`, CARTO style (no key) |
+| Basemap | MapLibre GL + `react-map-gl/maplibre`, ESRI satellite or CARTO vector (no key) |
 | Styling | Tailwind CSS 4 + daisyUI 5 |
 | Build / dev | Vite 8 |
 | Lint / format | Biome (no semicolons, single quotes) |
@@ -190,12 +208,12 @@ Use the following prefixes:
 - Does the deck.gl layer render even if the basemap fails to load?
 - Are heights extruded in meters and footprints valid `[lng, lat]` rings?
 - Are generated filler buildings deterministic (seeded RNG)?
+- Do OSM-derived footprint sizes use deterministic values from element IDs?
 - Does the demo run with no API keys / secrets?
 - Does `bun run check:all` pass (Biome + Vitest + build)?
 
 ## OUT OF SCOPE / ANTI-PATTERNS
 
-- Live OSM / Overpass fetching
 - Keyed basemap providers (Google, Mapbox)
 - Persisting scenes to a database
 - `Math.random()` for scene geometry (must be a seeded RNG)
@@ -203,5 +221,6 @@ Use the following prefixes:
 
 ## SUMMARY MANTRA
 
-Pick a city. Generate a deterministic skyline. Extrude in meters.
-Color by height. Render with deck.gl. No keys.
+Pick a city. Fetch real OSM buildings at runtime. Fall back to generated
+filler. Color by height band. Extrude in meters. Render with deck.gl.
+No keys.
