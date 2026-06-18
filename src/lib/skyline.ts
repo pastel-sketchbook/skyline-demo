@@ -77,9 +77,9 @@ function lerpChannel(a: number, b: number, t: number): number {
   return Math.round(a + (b - a) * t)
 }
 
-/** Default low → high gradient (soft teal → warm sand). */
-export const DEFAULT_LOW_COLOR: Rgb = [120, 190, 196]
-export const DEFAULT_HIGH_COLOR: Rgb = [230, 185, 140]
+/** Default low → high gradient (light peach → deep orange). */
+export const DEFAULT_LOW_COLOR: Rgb = [255, 200, 150]
+export const DEFAULT_HIGH_COLOR: Rgb = [220, 110, 50]
 
 /**
  * Map a height to a color along a low→high gradient. Heights at or below

@@ -1,19 +1,52 @@
 import type { MapViewState, PickingInfo } from '@deck.gl/core'
 import { PolygonLayer } from '@deck.gl/layers'
 import { DeckGL } from '@deck.gl/react'
+import type { StyleSpecification } from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import { useMemo } from 'react'
 import { Map as MapLibreMap } from 'react-map-gl/maplibre'
 
 import type { SkylineBuilding } from '@/lib/skyline'
-import 'maplibre-gl/dist/maplibre-gl.css'
 
-// Free CARTO light basemap — no API key required.
-const BASEMAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
+export type BasemapMode = 'satellite' | 'vector'
+
+// ESRI World Imagery satellite + reference overlay — no API key.
+const SATELLITE_STYLE: StyleSpecification = {
+  version: 8,
+  sources: {
+    'esri-satellite': {
+      type: 'raster',
+      tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      tileSize: 256,
+      attribution:
+        '&copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      maxzoom: 19,
+    },
+    'esri-reference': {
+      type: 'raster',
+      tiles: [
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer/tile/{z}/{y}/{x}',
+      ],
+      tileSize: 256,
+      attribution: '&copy; Esri',
+      maxzoom: 19,
+    },
+  },
+  layers: [
+    { id: 'satellite', type: 'raster', source: 'esri-satellite', minzoom: 0, maxzoom: 22 },
+    { id: 'reference', type: 'raster', source: 'esri-reference', minzoom: 0, maxzoom: 22 },
+  ],
+  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+}
+
+// Free CARTO light vector basemap — no API key required.
+const VECTOR_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
 
 interface SkylineDeckProps {
   buildings: SkylineBuilding[]
   viewState: MapViewState
   onViewStateChange: (viewState: MapViewState) => void
+  basemap: BasemapMode
 }
 
 function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
@@ -32,7 +65,9 @@ function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
   }
 }
 
-export default function SkylineDeck({ buildings, viewState, onViewStateChange }: SkylineDeckProps) {
+export default function SkylineDeck({ buildings, viewState, onViewStateChange, basemap }: SkylineDeckProps) {
+  const mapStyle = basemap === 'satellite' ? SATELLITE_STYLE : VECTOR_STYLE
+
   const layers = useMemo(
     () => [
       new PolygonLayer<SkylineBuilding>({
@@ -66,7 +101,7 @@ export default function SkylineDeck({ buildings, viewState, onViewStateChange }:
       getTooltip={getTooltip}
       onViewStateChange={({ viewState: next }) => onViewStateChange(next as MapViewState)}
     >
-      <MapLibreMap reuseMaps mapStyle={BASEMAP_STYLE} />
+      <MapLibreMap reuseMaps mapStyle={mapStyle} />
     </DeckGL>
   )
 }

@@ -54,6 +54,12 @@ tasks:
     cmds:
       - bun run test:cov
 
+  # --- Data ---
+  build:data:
+    desc: "Fetch real building data from OSM Overpass API"
+    cmds:
+      - bun run build:data
+
   # --- Run ---
   web:dev:
     desc: "Start the Vite dev server"
@@ -61,9 +67,9 @@ tasks:
       - bun run dev
 
   web:build:
-    desc: "Production build"
+    desc: "Fetch real data then production build"
     cmds:
-      - bun run build
+      - bun run build:data && bun run build
 
   web:preview:
     desc: "Preview the production build"

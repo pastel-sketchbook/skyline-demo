@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "build:data": "bun run scripts/fetch-buildings.ts",
     "dev": "vite",
     "build": "tsgo -b && vite build",
     "preview": "vite preview",

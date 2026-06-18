@@ -1,5 +1,6 @@
-import { Building2, ChevronDown, Compass, Eye, Layers, RotateCcw } from 'lucide-react'
+import { Building2, ChevronDown, Compass, Eye, Layers, Map as MapIcon, RotateCcw, Satellite } from 'lucide-react'
 
+import type { BasemapMode } from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { CITIES } from '@/data/cities'
 
@@ -8,10 +9,12 @@ interface CityPickerProps {
   pitch: number
   bearing: number
   buildingCount: number
+  basemap: BasemapMode
   onSelectCity: (id: string) => void
   onPitchChange: (pitch: number) => void
   onBearingChange: (bearing: number) => void
   onReset: () => void
+  onBasemapChange: (mode: BasemapMode) => void
 }
 
 export default function CityPicker({
@@ -19,10 +22,12 @@ export default function CityPicker({
   pitch,
   bearing,
   buildingCount,
+  basemap,
   onSelectCity,
   onPitchChange,
   onBearingChange,
   onReset,
+  onBasemapChange,
 }: CityPickerProps) {
   return (
     <div className="card-frost w-72 p-4">
@@ -69,6 +74,42 @@ export default function CityPicker({
 
       <div className="divider-subtle my-3" />
 
+      {/* ── Basemap toggle ──────────────────────────────────── */}
+      <div className="flex flex-col gap-1">
+        <span className="flex items-center gap-1.5 font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">
+          <MapIcon size={12} strokeWidth={1.8} />
+          Basemap
+        </span>
+        <div className="flex gap-1.5">
+          <button
+            type="button"
+            className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-medium transition-colors ${
+              basemap === 'satellite'
+                ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
+                : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
+            }`}
+            onClick={() => onBasemapChange('satellite')}
+          >
+            <Satellite size={12} strokeWidth={1.8} />
+            Photo
+          </button>
+          <button
+            type="button"
+            className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-medium transition-colors ${
+              basemap === 'vector'
+                ? 'border-cyan-400 bg-cyan-100 text-cyan-700'
+                : 'border-warm-300 bg-paper-50 text-warm-500 hover:bg-warm-300/20'
+            }`}
+            onClick={() => onBasemapChange('vector')}
+          >
+            <MapIcon size={12} strokeWidth={1.8} />
+            Map
+          </button>
+        </div>
+      </div>
+
+      <div className="divider-subtle my-3" />
+
       {/* ── Pitch slider ────────────────────────────────────── */}
       <label className="flex flex-col gap-1">
         <span className="flex items-center justify-between font-mono text-[10px] font-medium tracking-widest text-warm-400 uppercase">
@@ -80,7 +121,7 @@ export default function CityPicker({
         </span>
         <input
           type="range"
-          className="range range-primary range-xs"
+          className="range range-accent-orange range-xs"
           min={0}
           max={75}
           step={1}
@@ -100,7 +141,7 @@ export default function CityPicker({
         </span>
         <input
           type="range"
-          className="range range-primary range-xs"
+          className="range range-accent-orange range-xs"
           min={-180}
           max={180}
           step={1}

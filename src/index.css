@@ -83,3 +83,8 @@ body {
   background: var(--color-warm-300);
   opacity: 0.5;
 }
+
+/* ── Orange range sliders for pitch/bearing ────────────────────── */
+.range-accent-orange {
+  accent-color: #e28c4a;
+}

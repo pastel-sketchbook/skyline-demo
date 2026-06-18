@@ -19,8 +19,11 @@ auditable.
   generation, height→color, deterministic building generation) are the
   pieces with non-trivial logic — they must have tests
 - Keep per-city data as typed modules under `src/data/`, one entry per city
+- Optionally fetch real building footprints from OSM Overpass at build time
+  via `bun run build:data` before `bun run build`
 - Render with **deck.gl** (`@deck.gl/react` + `PolygonLayer`, extruded)
-  over a **MapLibre** CARTO basemap that needs **no API key**
+  over a **MapLibre** basemap (ESRI satellite or CARTO vector) that needs
+  **no API key**
 - Use **bun** as the package manager and task runner
 
 ### Reviewer Role
@@ -33,7 +36,8 @@ and adherence to TypeScript + React best practices.
 - Check that heights are extruded in **meters** and footprints are valid
   closed rings of `[lng, lat]` pairs
 - Confirm generated filler buildings are **deterministic** (seeded RNG) so
-  the scene and tests are stable
+  the scene and tests are stable. Real building data fetched from OSM Overpass
+  uses deterministic footprint sizes derived from OSM element IDs.
 - Validate the demo runs with **no secrets / no API keys**
 - Run `bun run check:all` (Biome lint + format + Vitest + build)
 
