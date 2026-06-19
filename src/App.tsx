@@ -1,4 +1,5 @@
 import type { MapViewState } from '@deck.gl/core'
+import { WebMercatorViewport } from '@deck.gl/core'
 import { Globe, KeyRound, Layers, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -101,6 +102,27 @@ export default function App() {
           })
     return buildSkyline([...c.landmarks, ...filler])
   }, [cityId, realBuildings])
+
+  const tallestLandmark = useMemo(() => {
+    if (buildings.length === 0) return null
+    const vs = viewState
+    const viewport = new WebMercatorViewport({
+      longitude: vs.longitude ?? 0,
+      latitude: vs.latitude ?? 0,
+      zoom: vs.zoom ?? 14,
+      pitch: vs.pitch ?? 0,
+      bearing: vs.bearing ?? 0,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    })
+    const [west, north] = viewport.unproject([0, 0])
+    const [east, south] = viewport.unproject([window.innerWidth, window.innerHeight])
+    const landmarks = buildings.filter(
+      (b) => b.landmark && b.lng >= west && b.lng <= east && b.lat >= south && b.lat <= north,
+    )
+    if (landmarks.length === 0) return null
+    return landmarks.reduce((a, b) => (a.height > b.height ? a : b))
+  }, [viewState, buildings])
 
   // ── Orbit animation ──────────────────────────────────────────
   // biome-ignore lint/correctness/useExhaustiveDependencies: capture bearing at orbit start
@@ -262,6 +284,7 @@ export default function App() {
             onHeightExaggerationChange={setHeightExaggeration}
             orbiting={orbiting}
             onOrbit={() => setOrbiting((prev) => !prev)}
+            tallestLandmark={tallestLandmark}
           />
         </div>
       </div>

@@ -16,6 +16,7 @@ import type { CSSProperties } from 'react'
 import type { BasemapMode } from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { CITIES } from '@/data/cities'
+import type { SkylineBuilding } from '@/lib/skyline'
 import { HEIGHT_BANDS } from '@/lib/skyline'
 
 const LEGEND_GRADIENT = `linear-gradient(to right, ${HEIGHT_BANDS.map(
@@ -39,6 +40,7 @@ interface CityPickerProps {
   onHeightExaggerationChange: (value: number) => void
   orbiting: boolean
   onOrbit: () => void
+  tallestLandmark: SkylineBuilding | null
 }
 
 export default function CityPicker({
@@ -58,6 +60,7 @@ export default function CityPicker({
   onHeightExaggerationChange,
   orbiting,
   onOrbit,
+  tallestLandmark,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
@@ -79,6 +82,11 @@ export default function CityPicker({
             {Math.abs(city.center.lng).toFixed(3)}°{city.center.lng >= 0 ? 'E' : 'W'}
           </p>
           <p className="mt-1 font-sans text-[11px] leading-snug text-slate-400">{city.blurb}</p>
+          {tallestLandmark && (
+            <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
+              ★ {tallestLandmark.name} · {tallestLandmark.height} m
+            </p>
+          )}
         </div>
       </div>
 
