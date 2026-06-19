@@ -87,16 +87,44 @@ export const HEIGHT_BANDS: [number, number, Rgb][] = [
   [400, Infinity, [224, 113, 74]], // deep ember (--color-ember-500)
 ]
 
+export type PaletteName = 'default' | 'night' | 'mono'
+
+export const BUILDING_PALETTES: Record<PaletteName, [number, number, Rgb][]> = {
+  default: HEIGHT_BANDS,
+  night: [
+    [0, 30, [180, 195, 210]],
+    [30, 80, [120, 145, 175]],
+    [80, 150, [80, 105, 145]],
+    [150, 250, [55, 75, 120]],
+    [250, 400, [40, 52, 90]],
+    [400, Infinity, [25, 30, 55]],
+  ],
+  mono: [
+    [0, 30, [220, 220, 220]],
+    [30, 80, [190, 190, 190]],
+    [80, 150, [160, 160, 160]],
+    [150, 250, [130, 130, 130]],
+    [250, 400, [100, 100, 100]],
+    [400, Infinity, [70, 70, 70]],
+  ],
+}
+
 /**
- * Map a height to a color from discrete height bands.
- * Each band has a fixed color — short buildings are light/warm,
- * tall buildings dark/rich, creating a visible height hierarchy.
+ * Map a height to a color from a given set of discrete height bands.
+ * Each band has a fixed color — short buildings light, tall buildings dark.
  */
-export function heightToBandColor(height: number): Rgb {
-  for (const [lo, hi, color] of HEIGHT_BANDS) {
+export function heightToColorFromBands(height: number, bands: [number, number, Rgb][]): Rgb {
+  for (const [lo, hi, color] of bands) {
     if (height >= lo && height < hi) return color
   }
-  return HEIGHT_BANDS[HEIGHT_BANDS.length - 1][2]
+  return bands[bands.length - 1][2]
+}
+
+/**
+ * Map a height to a color from the default height bands.
+ */
+export function heightToBandColor(height: number): Rgb {
+  return heightToColorFromBands(height, HEIGHT_BANDS)
 }
 
 /** Default low → high gradient (light peach → deep orange). */
@@ -118,6 +146,10 @@ export function heightToColor(
   const t = span <= 0 ? 0 : clamp((height - min) / span, 0, 1)
   return [lerpChannel(low[0], high[0], t), lerpChannel(low[1], high[1], t), lerpChannel(low[2], high[2], t)]
 }
+
+export type TintMode = 'none' | 'warm' | 'cool' | 'sepia'
+
+export type MapBgColor = 'slate' | 'charcoal' | 'white'
 
 /**
  * Mulberry32 — a tiny, fast, deterministic PRNG. Returns a function that

@@ -6,9 +6,10 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { useMemo } from 'react'
 import { Map as MapLibreMap } from 'react-map-gl/maplibre'
 
-import type { SkylineBuilding } from '@/lib/skyline'
+import type { PaletteName, SkylineBuilding } from '@/lib/skyline'
+import { BUILDING_PALETTES, heightToColorFromBands } from '@/lib/skyline'
 
-export type BasemapMode = 'satellite' | 'vector'
+export type BasemapMode = 'satellite' | 'vector' | 'dark'
 
 // ESRI World Imagery satellite + reference overlay — no API key.
 const SATELLITE_STYLE: StyleSpecification = {
@@ -42,6 +43,9 @@ const SATELLITE_STYLE: StyleSpecification = {
 // Free CARTO Voyager vector basemap — more vibrant colors, no API key required.
 const VECTOR_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json'
 
+// Free CARTO Dark Matter vector basemap — dark monochrome, no API key required.
+const DARK_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+
 interface SkylineDeckProps {
   buildings: SkylineBuilding[]
   viewState: MapViewState
@@ -49,6 +53,7 @@ interface SkylineDeckProps {
   basemap: BasemapMode
   showSkyline: boolean
   heightExaggeration: number
+  palette: PaletteName
   onBuildingClick: (building: SkylineBuilding) => void
 }
 
@@ -80,6 +85,12 @@ function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
   }
 }
 
+const BASEMAP_STYLES: Record<BasemapMode, StyleSpecification | string> = {
+  satellite: SATELLITE_STYLE,
+  vector: VECTOR_STYLE,
+  dark: DARK_STYLE,
+}
+
 export default function SkylineDeck({
   buildings,
   viewState,
@@ -87,9 +98,11 @@ export default function SkylineDeck({
   basemap,
   showSkyline,
   heightExaggeration,
+  palette,
   onBuildingClick,
 }: SkylineDeckProps) {
-  const mapStyle = basemap === 'satellite' ? SATELLITE_STYLE : VECTOR_STYLE
+  const mapStyle = BASEMAP_STYLES[basemap]
+  const bands = BUILDING_PALETTES[palette]
 
   const layers = useMemo(
     () => [
@@ -104,7 +117,10 @@ export default function SkylineDeck({
         lineWidthMaxPixels: 3,
         getPolygon: (d) => d.footprint,
         getElevation: (d) => d.height * heightExaggeration,
-        getFillColor: (d) => [d.color[0], d.color[1], d.color[2], d.landmark ? 255 : 220],
+        getFillColor: (d) => {
+          const [r, g, b] = heightToColorFromBands(d.height, bands)
+          return [r, g, b, d.landmark ? 255 : 220]
+        },
         getLineColor: (d) => (d.landmark ? [120, 130, 130, 200] : [40, 40, 40, 180]),
         material: {
           ambient: 0.25,
@@ -117,7 +133,7 @@ export default function SkylineDeck({
         },
       }),
     ],
-    [buildings, showSkyline, heightExaggeration, onBuildingClick],
+    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick],
   )
 
   return (

@@ -16,8 +16,8 @@ import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import type { BasemapMode } from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { CITIES } from '@/data/cities'
-import type { SkylineBuilding } from '@/lib/skyline'
-import { HEIGHT_BANDS } from '@/lib/skyline'
+import type { MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
+import { BUILDING_PALETTES, HEIGHT_BANDS } from '@/lib/skyline'
 
 const LEGEND_GRADIENT = `linear-gradient(to right, ${HEIGHT_BANDS.map(
   ([, , [r, g, b]]) => `rgb(${r}, ${g}, ${b})`,
@@ -29,11 +29,17 @@ interface CityPickerProps {
   bearing: number
   buildingCount: number
   basemap: BasemapMode
+  palette: PaletteName
+  tint: TintMode
+  mapBgColor: MapBgColor
   onSelectCity: (id: string) => void
   onPitchChange: (pitch: number) => void
   onBearingChange: (bearing: number) => void
   onReset: () => void
   onBasemapChange: (mode: BasemapMode) => void
+  onPaletteChange: (palette: PaletteName) => void
+  onTintChange: (tint: TintMode) => void
+  onMapBgColorChange: (bg: MapBgColor) => void
   showSkyline: boolean
   onToggleSkyline: () => void
   heightExaggeration: number
@@ -49,11 +55,17 @@ export default function CityPicker({
   bearing,
   buildingCount,
   basemap,
+  palette,
+  tint,
+  mapBgColor,
   onSelectCity,
   onPitchChange,
   onBearingChange,
   onReset,
   onBasemapChange,
+  onPaletteChange,
+  onTintChange,
+  onMapBgColorChange,
   showSkyline,
   onToggleSkyline,
   heightExaggeration,
@@ -187,30 +199,103 @@ export default function CityPicker({
           Basemap
         </span>
         <div className="flex rounded-lg border border-slate-300 bg-paper-50 p-0.5">
-          <button
-            type="button"
-            className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md py-1 text-xs font-medium transition-all ${
-              basemap === 'satellite'
-                ? 'bg-gradient-to-b from-cyan-400 to-cyan-500 text-white shadow-sm shadow-cyan-500/25'
-                : 'text-slate-500 hover:bg-slate-300/20'
-            }`}
-            onClick={() => onBasemapChange('satellite')}
-          >
-            <Satellite size={12} strokeWidth={1.8} />
-            Photo
-          </button>
-          <button
-            type="button"
-            className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md py-1 text-xs font-medium transition-all ${
-              basemap === 'vector'
-                ? 'bg-gradient-to-b from-cyan-400 to-cyan-500 text-white shadow-sm shadow-cyan-500/25'
-                : 'text-slate-500 hover:bg-slate-300/20'
-            }`}
-            onClick={() => onBasemapChange('vector')}
-          >
-            <MapIcon size={12} strokeWidth={1.8} />
-            Map
-          </button>
+          {(['satellite', 'vector', 'dark'] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md py-1 text-xs font-medium transition-all ${
+                basemap === mode
+                  ? 'bg-gradient-to-b from-cyan-400 to-cyan-500 text-white shadow-sm shadow-cyan-500/25'
+                  : 'text-slate-500 hover:bg-slate-300/20'
+              }`}
+              onClick={() => onBasemapChange(mode)}
+            >
+              {mode === 'satellite' ? (
+                <Satellite size={12} strokeWidth={1.8} />
+              ) : (
+                <MapIcon size={12} strokeWidth={1.8} />
+              )}
+              {mode === 'satellite' ? 'Photo' : mode === 'dark' ? 'Dark' : 'Map'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Colors ──────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-1">
+        <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <Eye size={10} strokeWidth={1.8} />
+          Colors
+        </span>
+        <div className="rounded-lg border border-slate-300 bg-paper-50 p-2 space-y-2">
+          {/* Tint */}
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-medium text-slate-500">Tint</span>
+            <div className="flex gap-1">
+              {(['none', 'warm', 'cool', 'sepia'] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className={`h-4 w-4 cursor-pointer rounded-full ring-1 transition-all ${
+                    tint === t ? 'scale-125 ring-cyan-400 ring-offset-1' : 'ring-slate-300 hover:ring-slate-400'
+                  } ${
+                    t === 'none'
+                      ? 'bg-white'
+                      : t === 'warm'
+                        ? 'bg-amber-200'
+                        : t === 'cool'
+                          ? 'bg-cyan-200'
+                          : 'bg-amber-300/70'
+                  }`}
+                  onClick={() => onTintChange(t)}
+                  title={t}
+                />
+              ))}
+            </div>
+          </div>
+          {/* Building palette */}
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-medium text-slate-500">Buildings</span>
+            <div className="flex gap-1">
+              {(['default', 'night', 'mono'] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  className={`flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-medium transition-all ${
+                    palette === p
+                      ? 'bg-cyan-100 text-cyan-700 ring-1 ring-cyan-300'
+                      : 'text-slate-500 hover:bg-slate-300/20'
+                  }`}
+                  onClick={() => onPaletteChange(p)}
+                >
+                  <span
+                    className="inline-block h-2 w-3 rounded-sm"
+                    style={{
+                      background: `linear-gradient(to right, ${BUILDING_PALETTES[p].map(([, , c]) => `rgb(${c[0]},${c[1]},${c[2]})`).join(',')})`,
+                    }}
+                  />
+                  {p === 'default' ? 'Teal' : p === 'night' ? 'Night' : 'Mono'}
+                </button>
+              ))}
+            </div>
+          </div>
+          {/* Map background */}
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-medium text-slate-500">Map bg</span>
+            <div className="flex gap-1">
+              {(['slate', 'charcoal', 'white'] as const).map((bg) => (
+                <button
+                  key={bg}
+                  type="button"
+                  className={`h-4 w-4 cursor-pointer rounded-full ring-1 transition-all ${
+                    mapBgColor === bg ? 'scale-125 ring-cyan-400 ring-offset-1' : 'ring-slate-300 hover:ring-slate-400'
+                  } ${bg === 'slate' ? 'bg-slate-200' : bg === 'charcoal' ? 'bg-slate-700' : 'bg-white'}`}
+                  onClick={() => onMapBgColorChange(bg)}
+                  title={bg}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

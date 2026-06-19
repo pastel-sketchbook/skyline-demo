@@ -8,10 +8,23 @@ import SkylineDeck from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { DEFAULT_CITY_ID, getCity } from '@/data/cities'
 import { fetchBuildingsForArea } from '@/lib/overpass'
-import type { BuildingSpec, SkylineBuilding } from '@/lib/skyline'
+import type { BuildingSpec, MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
 import { buildSkyline, generateBuildings } from '@/lib/skyline'
 
-export type BasemapMode = 'satellite' | 'vector'
+export type BasemapMode = 'satellite' | 'vector' | 'dark'
+
+const TINT_STYLES: Record<TintMode, string | null> = {
+  none: null,
+  warm: 'rgba(232, 146, 111, 0.12)',
+  cool: 'rgba(96, 197, 205, 0.12)',
+  sepia: 'rgba(160, 120, 60, 0.15)',
+}
+
+const MAP_BG_CLASSES: Record<MapBgColor, string> = {
+  slate: 'bg-paper',
+  charcoal: 'bg-slate-800',
+  white: 'bg-white',
+}
 
 const FETCH_RADIUS = 1400
 const MOVE_THRESHOLD_M = 400
@@ -66,6 +79,9 @@ export default function App() {
   const [realBuildings, setRealBuildings] = useState<BuildingSpec[]>([])
   const [showSkyline, setShowSkyline] = useState(true)
   const [heightExaggeration, setHeightExaggeration] = useState(1)
+  const [palette, setPalette] = useState<PaletteName>('default')
+  const [tint, setTint] = useState<TintMode>('none')
+  const [mapBgColor, setMapBgColor] = useState<MapBgColor>('slate')
   const [orbiting, setOrbiting] = useState(false)
   const [selectedBuilding, setSelectedBuilding] = useState<SkylineBuilding | null>(null)
 
@@ -197,7 +213,7 @@ export default function App() {
   }, [])
 
   return (
-    <main className="relative h-full w-full overflow-hidden bg-paper">
+    <main className={`relative h-full w-full overflow-hidden ${MAP_BG_CLASSES[mapBgColor]}`}>
       <SkylineDeck
         buildings={buildings}
         viewState={viewState}
@@ -205,6 +221,7 @@ export default function App() {
         basemap={basemap}
         showSkyline={showSkyline}
         heightExaggeration={heightExaggeration}
+        palette={palette}
         onBuildingClick={handleBuildingClick}
       />
 
@@ -217,6 +234,14 @@ export default function App() {
             'linear-gradient(to bottom, rgba(232,146,111,0.10) 0%, rgba(252,237,217,0.05) 30%, transparent 100%)',
         }}
       />
+
+      {/* ── Tint overlay ─────────────────────────────────────────── */}
+      {TINT_STYLES[tint] && (
+        <div
+          className="pointer-events-none absolute inset-0 z-10"
+          style={{ backgroundColor: TINT_STYLES[tint], mixBlendMode: 'multiply' }}
+        />
+      )}
 
       {/* ── Detail panel ──────────────────────────────────────── */}
       {selectedBuilding && (
@@ -273,11 +298,17 @@ export default function App() {
             bearing={viewState.bearing ?? 0}
             buildingCount={buildings.length}
             basemap={basemap}
+            palette={palette}
+            tint={tint}
+            mapBgColor={mapBgColor}
             onSelectCity={handleSelectCity}
             onPitchChange={(pitch) => setViewState((prev) => ({ ...prev, pitch }))}
             onBearingChange={handleBearingChange}
             onReset={handleReset}
             onBasemapChange={setBasemap}
+            onPaletteChange={setPalette}
+            onTintChange={setTint}
+            onMapBgColorChange={setMapBgColor}
             showSkyline={showSkyline}
             onToggleSkyline={() => setShowSkyline((prev) => !prev)}
             heightExaggeration={heightExaggeration}
@@ -302,7 +333,7 @@ export default function App() {
           <span className="h-3 w-px bg-slate-300/60" />
           <span className="flex items-center gap-1.5">
             <Globe size={12} strokeWidth={1.6} className="text-cyan-500" />
-            {basemap === 'satellite' ? 'ESRI satellite' : 'CARTO vector'}
+            {basemap === 'satellite' ? 'ESRI satellite' : basemap === 'dark' ? 'CARTO dark' : 'CARTO vector'}
           </span>
           <span className="h-3 w-px bg-slate-300/60" />
           <span className="flex items-center gap-1.5">
