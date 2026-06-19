@@ -105,11 +105,25 @@ export default function CityPicker({
             value={city.id}
             onChange={(event) => onSelectCity(event.target.value)}
           >
-            {CITIES.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
+            {Object.entries(
+              CITIES.reduce<Record<string, typeof CITIES>>((groups, c) => {
+                if (!groups[c.country]) groups[c.country] = []
+                groups[c.country].push(c)
+                return groups
+              }, {}),
+            )
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([country, cities]) => (
+                <optgroup key={country} label={country}>
+                  {cities
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.name}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
           </select>
           <ChevronDown
             size={13}
