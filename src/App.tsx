@@ -129,6 +129,7 @@ export default function App() {
   const [touring, setTouring] = useState(false)
   const [selectedBuilding, setSelectedBuilding] = useState<SkylineBuilding | null>(null)
   const [sunPosition, setSunPosition] = useState(12)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -165,6 +166,27 @@ export default function App() {
           })
     return buildSkyline([...c.landmarks, ...filler])
   }, [cityId, realBuildings])
+
+  const filteredBuildings = useMemo(() => {
+    if (!searchQuery.trim()) return buildings
+    const q = searchQuery.toLowerCase()
+    // Support height range queries like "100-200" or ">100" or "<200"
+    const rangeMatch = q.match(/^([<>])?\s*(\d+)(?:\s*[-–]\s*(\d+))?$/)
+    if (rangeMatch) {
+      const op = rangeMatch[1]
+      const min = Number(rangeMatch[2])
+      const max = rangeMatch[3] ? Number(rangeMatch[3]) : undefined
+      return buildings.filter((b) => {
+        if (op === '>') return b.height > min
+        if (op === '<') return b.height < min
+        if (max !== undefined) return b.height >= min && b.height <= max
+        return b.height >= min
+      })
+    }
+    return buildings.filter(
+      (b) => b.name.toLowerCase().includes(q) || b.id.toLowerCase().includes(q) || String(b.height).includes(q),
+    )
+  }, [buildings, searchQuery])
 
   const tallestLandmark = useMemo(() => {
     if (buildings.length === 0) return null
@@ -389,7 +411,7 @@ export default function App() {
   return (
     <main className={`relative h-full w-full overflow-hidden ${MAP_BG_CLASSES[mapBgColor]}`}>
       <SkylineDeck
-        buildings={buildings}
+        buildings={filteredBuildings}
         viewState={viewState}
         onViewStateChange={handleViewStateChange}
         basemap={basemap}
@@ -527,6 +549,10 @@ export default function App() {
             tallestLandmark={tallestLandmark}
             sunPosition={sunPosition}
             onSunPositionChange={setSunPosition}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            filteredCount={filteredBuildings.length}
+            totalCount={buildings.length}
           />
         </div>
       </div>

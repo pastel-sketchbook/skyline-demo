@@ -9,6 +9,7 @@ import {
   RotateCcw,
   RotateCw,
   Satellite,
+  Search,
   Sun,
 } from 'lucide-react'
 
@@ -50,6 +51,10 @@ interface CityPickerProps {
   tallestLandmark: SkylineBuilding | null
   sunPosition: number
   onSunPositionChange: (value: number) => void
+  searchQuery: string
+  onSearchChange: (value: string) => void
+  filteredCount: number
+  totalCount: number
 }
 
 export default function CityPicker({
@@ -78,6 +83,10 @@ export default function CityPicker({
   tallestLandmark,
   sunPosition,
   onSunPositionChange,
+  searchQuery,
+  onSearchChange,
+  filteredCount,
+  totalCount,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
@@ -193,6 +202,31 @@ export default function CityPicker({
             </div>
           )}
         </div>
+      </label>
+
+      {/* ── Divider ─────────────────────────────────────────── */}
+      <div className="divider-subtle" />
+
+      {/* ── Search ──────────────────────────────────────────── */}
+      <label className="flex flex-col gap-1">
+        <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span className="flex items-center gap-1">
+            <Search size={10} strokeWidth={1.8} />
+            Search
+          </span>
+          {searchQuery && (
+            <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+              {filteredCount}/{totalCount}
+            </span>
+          )}
+        </span>
+        <input
+          type="text"
+          className="w-full rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 text-sm text-slate-600 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
+          placeholder="Name, height (>100, <200, 50-150)"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
       </label>
 
       {/* ── Divider ─────────────────────────────────────────── */}
@@ -463,12 +497,14 @@ export default function CityPicker({
           <span className="flex h-2 w-9 overflow-hidden rounded-full bg-slate-300/50">
             <span
               className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 transition-all duration-700 ease-out"
-              style={{ width: `${Math.min(100, Math.round(buildingCount / 5))}%` }}
+              style={{ width: `${Math.min(100, Math.round((searchQuery ? filteredCount : buildingCount) / 5))}%` }}
             />
           </span>
           <span className="inline-flex items-baseline gap-1">
-            <span className="font-medium text-slate-600">{buildingCount}</span>
-            <span className="text-[9px] tracking-wide text-slate-400 uppercase">buildings</span>
+            <span className="font-medium text-slate-600">{searchQuery ? filteredCount : buildingCount}</span>
+            <span className="text-[9px] tracking-wide text-slate-400 uppercase">
+              {searchQuery ? `of ${totalCount}` : ''} buildings
+            </span>
             <span className="ml-0.5 inline-block h-1.5 w-1.5 animate-pulse-dot self-center rounded-full bg-cyan-400" />
           </span>
         </span>
