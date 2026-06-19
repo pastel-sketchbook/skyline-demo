@@ -76,6 +76,17 @@ tasks:
     cmds:
       - bun run preview
 
+  # --- Capture ---
+  gen:mp4:
+    desc: "Capture orbit as mp4 (dev server must be running)"
+    cmds:
+      - bun run scripts/capture-orbit.ts
+
+  gen:gif:
+    desc: "Capture orbit as mp4 + gif (dev server must be running)"
+    cmds:
+      - bun run scripts/capture-orbit.ts --gif
+
   # --- Housekeeping ---
   clean:
     desc: "Remove build artifacts and coverage"
