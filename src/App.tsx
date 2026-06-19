@@ -131,6 +131,7 @@ export default function App() {
   const [selectedBuilding, setSelectedBuilding] = useState<SkylineBuilding | null>(null)
   const [sunPosition, setSunPosition] = useState(12)
   const [searchQuery, setSearchQuery] = useState('')
+  const [seedOverride, setSeedOverride] = useState<number | null>(null)
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -146,6 +147,7 @@ export default function App() {
     const c = getCity(cityId)
     setRealBuildings([])
     setSelectedBuilding(null)
+    setSeedOverride(null)
     lastFetchRef.current = null
 
     const center = { lat: c.center.lat, lng: c.center.lng }
@@ -163,10 +165,10 @@ export default function App() {
         : generateBuildings({
             center: c.districtCenter,
             count: c.fillerCount,
-            seed: c.seed,
+            seed: seedOverride ?? c.seed,
           })
     return buildSkyline([...c.landmarks, ...filler])
-  }, [cityId, realBuildings])
+  }, [cityId, realBuildings, seedOverride])
 
   const filteredBuildings = useMemo(() => {
     if (!searchQuery.trim()) return buildings
@@ -577,6 +579,9 @@ export default function App() {
             onSearchChange={setSearchQuery}
             filteredCount={filteredBuildings.length}
             totalCount={buildings.length}
+            seedOverride={seedOverride}
+            onSeedOverrideChange={setSeedOverride}
+            defaultSeed={city.seed}
           />
         </div>
       </div>

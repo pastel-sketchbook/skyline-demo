@@ -2,6 +2,7 @@ import {
   Building2,
   ChevronDown,
   Compass,
+  Dice5,
   Eye,
   Layers,
   Map as MapIcon,
@@ -55,6 +56,9 @@ interface CityPickerProps {
   onSearchChange: (value: string) => void
   filteredCount: number
   totalCount: number
+  seedOverride: number | null
+  onSeedOverrideChange: (value: number | null) => void
+  defaultSeed: number
 }
 
 export default function CityPicker({
@@ -87,6 +91,9 @@ export default function CityPicker({
   onSearchChange,
   filteredCount,
   totalCount,
+  seedOverride,
+  onSeedOverrideChange,
+  defaultSeed,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
@@ -469,6 +476,44 @@ export default function CityPicker({
           value={sunPosition}
           onChange={(event) => onSunPositionChange(Number(event.target.value))}
         />
+      </label>
+
+      {/* ── Divider ─────────────────────────────────────────── */}
+      <div className="divider-subtle" />
+
+      {/* ── Seed ────────────────────────────────────────────── */}
+      <label className="flex flex-col gap-1">
+        <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span className="flex items-center gap-1">
+            <Dice5 size={10} strokeWidth={1.8} />
+            Seed
+          </span>
+          <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+            {seedOverride ?? defaultSeed}
+          </span>
+        </span>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            className="range-sm flex-1"
+            style={{ '--fill': `${((seedOverride ?? defaultSeed) / 1000) * 100}%` } as CSSProperties}
+            min={0}
+            max={1000}
+            step={1}
+            value={seedOverride ?? defaultSeed}
+            onChange={(event) => onSeedOverrideChange(Number(event.target.value))}
+          />
+          {seedOverride !== null && seedOverride !== defaultSeed && (
+            <button
+              type="button"
+              className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-cyan-600"
+              onClick={() => onSeedOverrideChange(null)}
+              title="Reset to default seed"
+            >
+              <RotateCcw size={12} strokeWidth={1.8} />
+            </button>
+          )}
+        </div>
       </label>
 
       {/* ── Divider ─────────────────────────────────────────── */}
