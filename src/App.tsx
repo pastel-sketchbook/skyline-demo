@@ -105,6 +105,8 @@ export default function App() {
   const abortRef = useRef<AbortController | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const orbitRafRef = useRef<number | undefined>(undefined)
+  const pendingOrbitRef = useRef(false)
+  const wasTransitioningRef = useRef(false)
 
   const city = getCity(cityId)
 
@@ -188,16 +190,31 @@ export default function App() {
   // Cancel orbit on city switch or manual bearing interaction.
   const handleBearingChange = useCallback((bearing: number) => {
     setOrbiting(false)
+    pendingOrbitRef.current = false
     setViewState((prev) => ({ ...prev, bearing }))
   }, [])
 
   const handleViewStateChange = (next: MapViewState) => {
     setViewState(next)
     // Skip fetch logic during fly-to transitions.
-    if ('transitionDuration' in next) return
+    if ('transitionDuration' in next) {
+      wasTransitioningRef.current = true
+      return
+    }
     const lat = next.latitude
     const lng = next.longitude
     if (lat === undefined || lng === undefined) return
+
+    // Fly-to just completed — auto-start orbit if we're at the destination.
+    if (wasTransitioningRef.current) {
+      wasTransitioningRef.current = false
+      if (pendingOrbitRef.current) {
+        pendingOrbitRef.current = false
+        const dest = getCity(cityId)
+        const dist = haversineMeters(lat, lng, dest.center.lat, dest.center.lng)
+        if (dist < 200) setOrbiting(true)
+      }
+    }
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
@@ -221,6 +238,7 @@ export default function App() {
     // Anchor fetch to destination immediately to suppress intermediate fetches during flight.
     const c = getCity(id)
     lastFetchRef.current = { lat: c.center.lat, lng: c.center.lng }
+    pendingOrbitRef.current = true
     setViewState({
       ...makeViewState(c),
       transitionDuration: 3000,
