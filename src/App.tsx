@@ -178,6 +178,7 @@ export default function App() {
         orbitRafRef.current = requestAnimationFrame(animate)
       } else {
         setOrbiting(false)
+        setViewState((prev) => ({ ...prev, bearing: startBearing }))
       }
     }
 
