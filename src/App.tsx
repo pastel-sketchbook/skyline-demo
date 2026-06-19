@@ -479,7 +479,7 @@ export default function App() {
           {/* ── City nav ───────────────────────────────────── */}
           <button
             type="button"
-            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-cyan-600 active:scale-90"
+            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 outline-none transition-all hover:bg-slate-300/20 hover:text-cyan-600 focus:ring-2 focus:ring-cyan-400/25 active:scale-90"
             onClick={handlePrevCity}
             title="Previous city (←)"
           >
@@ -487,7 +487,7 @@ export default function App() {
           </button>
           <button
             type="button"
-            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-cyan-600 active:scale-90"
+            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 outline-none transition-all hover:bg-slate-300/20 hover:text-cyan-600 focus:ring-2 focus:ring-cyan-400/25 active:scale-90"
             onClick={handleNextCity}
             title="Next city (→)"
           >
@@ -498,7 +498,7 @@ export default function App() {
           {/* ── Tour toggle ─────────────────────────────────── */}
           <button
             type="button"
-            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 transition-all active:scale-90 ${
+            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
               touring
                 ? 'bg-cyan-100 text-cyan-600 animate-pulse'
                 : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
@@ -513,7 +513,7 @@ export default function App() {
           {/* ── Share URL ───────────────────────────────────── */}
           <button
             type="button"
-            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 transition-all active:scale-90 ${
+            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
               copiedUrl ? 'bg-emerald-100 text-emerald-600' : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
             }`}
             onClick={handleCopyUrl}
