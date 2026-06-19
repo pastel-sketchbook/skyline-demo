@@ -1,5 +1,5 @@
 import type { MapViewState } from '@deck.gl/core'
-import { WebMercatorViewport } from '@deck.gl/core'
+import { FlyToInterpolator, WebMercatorViewport } from '@deck.gl/core'
 import { Globe, KeyRound, Layers, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -177,6 +177,8 @@ export default function App() {
 
   const handleViewStateChange = (next: MapViewState) => {
     setViewState(next)
+    // Skip fetch logic during fly-to transitions.
+    if ('transitionDuration' in next) return
     const lat = next.latitude
     const lng = next.longitude
     if (lat === undefined || lng === undefined) return
@@ -200,7 +202,14 @@ export default function App() {
     setOrbiting(false)
     setSelectedBuilding(null)
     setCityId(id)
-    setViewState(makeViewState(getCity(id)))
+    // Anchor fetch to destination immediately to suppress intermediate fetches during flight.
+    const c = getCity(id)
+    lastFetchRef.current = { lat: c.center.lat, lng: c.center.lng }
+    setViewState({
+      ...makeViewState(c),
+      transitionDuration: 2000,
+      transitionInterpolator: new FlyToInterpolator(),
+    })
   }
 
   const handleReset = () => {
