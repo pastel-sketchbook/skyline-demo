@@ -11,7 +11,7 @@ import {
   Satellite,
 } from 'lucide-react'
 
-import type { CSSProperties } from 'react'
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
 
 import type { BasemapMode } from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
@@ -66,18 +66,40 @@ export default function CityPicker({
   const bearingPct = ((bearing + 180) / 360) * 100
   const exhPct = ((heightExaggeration - 1) / 2) * 100
 
+  const [cityPickerOpen, setCityPickerOpen] = useState(false)
+  const cityPickerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!cityPickerOpen) return
+    const handler = (e: MouseEvent) => {
+      if (cityPickerRef.current && !cityPickerRef.current.contains(e.target as Node)) {
+        setCityPickerOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [cityPickerOpen])
+
+  const groupedCities = Object.entries(
+    CITIES.reduce<Record<string, typeof CITIES>>((groups, c) => {
+      if (!groups[c.country]) groups[c.country] = []
+      groups[c.country].push(c)
+      return groups
+    }, {}),
+  )
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([country, cities]) => [country, [...cities].sort((a, b) => a.name.localeCompare(b.name))] as const)
+
   return (
     <div className="card-frost animate-enter w-64 p-4 space-y-3">
       {/* ── Header ──────────────────────────────────────────── */}
       <div className="flex flex-col space-y-1.5">
+        <p className="font-mono text-[9px] font-bold tracking-[0.15em] text-cyan-600 uppercase">deck.gl skyline</p>
         <div className="flex items-start gap-2.5">
           <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 text-white shadow-sm shadow-cyan-500/25 ring-1 ring-white/40">
             <Building2 size={15} strokeWidth={1.8} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
-              deck.gl skyline
-            </p>
             <h1 className="font-serif text-xl leading-snug font-bold text-slate-800 tracking-tight">{city.name}</h1>
             <p className="mt-0.5 inline-flex items-center gap-1 font-mono text-[9px] tabular-nums text-cyan-600/80">
               <MapPin size={9} strokeWidth={2} />
@@ -86,7 +108,7 @@ export default function CityPicker({
             </p>
           </div>
         </div>
-        <p className="font-sans text-[11px] leading-snug text-slate-400">{city.blurb}</p>
+        <p className="font-sans text-[11px] leading-snug text-slate-600">{city.blurb}</p>
         {tallestLandmark && (
           <p className="inline-flex w-fit items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
             ★ {tallestLandmark.name} · {tallestLandmark.height} m
@@ -103,37 +125,55 @@ export default function CityPicker({
           <Layers size={10} strokeWidth={1.8} />
           City
         </span>
-        <div className="relative">
-          <select
-            className="w-full cursor-pointer appearance-none rounded-lg border border-slate-300 bg-paper-50 py-1.5 pr-7 pl-2.5 text-sm text-slate-600 outline-none transition-all focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
-            value={city.id}
-            onChange={(event) => onSelectCity(event.target.value)}
+        <div className="relative" ref={cityPickerRef}>
+          <button
+            type="button"
+            className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 text-sm text-slate-600 outline-none transition-all hover:border-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
+            onClick={() => setCityPickerOpen((prev) => !prev)}
           >
-            {Object.entries(
-              CITIES.reduce<Record<string, typeof CITIES>>((groups, c) => {
-                if (!groups[c.country]) groups[c.country] = []
-                groups[c.country].push(c)
-                return groups
-              }, {}),
-            )
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([country, cities]) => (
-                <optgroup key={country} label={country}>
-                  {cities
-                    .sort((a, b) => a.name.localeCompare(b.name))
-                    .map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-          </select>
-          <ChevronDown
-            size={13}
-            strokeWidth={1.8}
-            className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-slate-400"
-          />
+            <span>{city.name}</span>
+            <ChevronDown
+              size={13}
+              strokeWidth={1.8}
+              className={`text-slate-400 transition-transform ${cityPickerOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {cityPickerOpen && (
+            <div className="absolute left-0 right-0 top-full z-30 mt-1 rounded-xl border border-slate-300 bg-white shadow-lg">
+              <div className="relative">
+                <div
+                  className="max-h-[420px] space-y-1 overflow-y-auto p-2"
+                  style={{ columnCount: 2, columnGap: '0.5rem' }}
+                >
+                  {groupedCities.map(([country, cities]) => (
+                    <div key={country} className="mb-1.5" style={{ breakInside: 'avoid' }}>
+                      <p className="mb-0.5 truncate rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[8px] font-bold tracking-[0.12em] text-slate-500 uppercase">
+                        {country}
+                      </p>
+                      {cities.map((option) => (
+                        <button
+                          key={option.id}
+                          type="button"
+                          className={`block w-full cursor-pointer truncate rounded px-1.5 py-0.5 text-left text-[13px] font-semibold transition-all hover:bg-cyan-50 hover:text-cyan-700 ${
+                            option.id === city.id ? 'text-cyan-600' : 'text-slate-600'
+                          }`}
+                          onClick={() => {
+                            onSelectCity(option.id)
+                            setCityPickerOpen(false)
+                          }}
+                        >
+                          {option.name}
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-col items-center rounded-b-xl bg-gradient-to-t from-white via-white/90 to-transparent pb-0.5 pt-6">
+                  <ChevronDown size={12} strokeWidth={2} className="text-slate-300" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </label>
 
