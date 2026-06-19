@@ -3,6 +3,7 @@ import { FlyToInterpolator, WebMercatorViewport } from '@deck.gl/core'
 import {
   ArrowLeft,
   ArrowRight,
+  Camera,
   Crosshair,
   ExternalLink,
   Globe,
@@ -341,11 +342,34 @@ export default function App() {
   }, [cityId, handleSelectCity])
 
   const [copiedUrl, setCopiedUrl] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const handleCopyUrl = useCallback(async () => {
     await navigator.clipboard.writeText(location.href)
     setCopiedUrl(true)
     setTimeout(() => setCopiedUrl(false), 2000)
   }, [])
+
+  const handleExportImage = useCallback(() => {
+    setExporting(true)
+    requestAnimationFrame(() => {
+      const canvas = document.querySelector('.deckgl-overlay canvas') as HTMLCanvasElement | null
+      if (canvas) {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `skyline-${cityId}-${Date.now()}.png`
+            a.click()
+            URL.revokeObjectURL(url)
+          }
+          setExporting(false)
+        }, 'image/png')
+      } else {
+        setExporting(false)
+      }
+    })
+  }, [cityId])
 
   // ── Tour mode ─────────────────────────────────────────────────
   useEffect(() => {
@@ -607,6 +631,20 @@ export default function App() {
             title="Copy shareable URL"
           >
             <Share2 size={13} strokeWidth={1.8} />
+          </button>
+          {/* ── Export image ─────────────────────────────────── */}
+          <button
+            type="button"
+            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
+              exporting
+                ? 'bg-cyan-100 text-cyan-600 animate-pulse'
+                : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+            }`}
+            onClick={handleExportImage}
+            title="Export as PNG"
+            disabled={exporting}
+          >
+            <Camera size={13} strokeWidth={1.8} />
           </button>
           <span className="h-3 w-px bg-slate-300/60" />
 
