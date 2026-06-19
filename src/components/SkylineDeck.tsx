@@ -55,6 +55,7 @@ interface SkylineDeckProps {
   heightExaggeration: number
   palette: PaletteName
   onBuildingClick: (building: SkylineBuilding) => void
+  sunPosition: number
 }
 
 function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
@@ -100,9 +101,34 @@ export default function SkylineDeck({
   heightExaggeration,
   palette,
   onBuildingClick,
+  sunPosition,
 }: SkylineDeckProps) {
   const mapStyle = BASEMAP_STYLES[basemap]
   const bands = BUILDING_PALETTES[palette]
+
+  // Calculate lighting from sun position (0-24 hours)
+  const material = useMemo(() => {
+    // Sun angle: 0h = midnight (no light), 6h = dawn, 12h = noon, 18h = dusk
+    const sunAngle = ((sunPosition - 6) / 12) * Math.PI
+    const sunAltitude = Math.sin(sunAngle)
+    const sunHorizon = Math.cos(sunAngle)
+
+    // Ambient: higher at noon (0.35), lower at dawn/dusk (0.15), lowest at night (0.05)
+    const ambient = sunAltitude > 0 ? 0.15 + 0.2 * sunAltitude : 0.05
+    // Diffuse: peaks at dawn/dusk for dramatic lighting, lower at noon
+    const diffuse = sunAltitude > 0 ? 0.5 + 0.3 * Math.abs(sunHorizon) : 0.2
+
+    return {
+      ambient,
+      diffuse,
+      shininess: 32,
+      specularColor: [80 * (1 + sunHorizon * 0.3), 80 * (1 + sunHorizon * 0.3), 80 * (1 + sunHorizon * 0.3)] as [
+        number,
+        number,
+        number,
+      ],
+    }
+  }, [sunPosition])
 
   const layers = useMemo(
     () => [
@@ -122,18 +148,13 @@ export default function SkylineDeck({
           return [r, g, b, d.landmark ? 255 : 220]
         },
         getLineColor: (d) => (d.landmark ? [120, 130, 130, 200] : [40, 40, 40, 180]),
-        material: {
-          ambient: 0.25,
-          diffuse: 0.75,
-          shininess: 32,
-          specularColor: [80, 80, 80],
-        },
+        material,
         onClick: (info) => {
           if (info.object) onBuildingClick(info.object)
         },
       }),
     ],
-    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick],
+    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick, material],
   )
 
   return (

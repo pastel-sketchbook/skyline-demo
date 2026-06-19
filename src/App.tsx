@@ -128,6 +128,7 @@ export default function App() {
   const [orbiting, setOrbiting] = useState(false)
   const [touring, setTouring] = useState(false)
   const [selectedBuilding, setSelectedBuilding] = useState<SkylineBuilding | null>(null)
+  const [sunPosition, setSunPosition] = useState(12)
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -396,6 +397,7 @@ export default function App() {
         heightExaggeration={heightExaggeration}
         palette={palette}
         onBuildingClick={handleBuildingClick}
+        sunPosition={sunPosition}
       />
 
       {/* ── Sky gradient overlay ──────────────────────────────── */}
@@ -523,6 +525,8 @@ export default function App() {
             orbiting={orbiting}
             onOrbit={() => setOrbiting((prev) => !prev)}
             tallestLandmark={tallestLandmark}
+            sunPosition={sunPosition}
+            onSunPositionChange={setSunPosition}
           />
         </div>
       </div>

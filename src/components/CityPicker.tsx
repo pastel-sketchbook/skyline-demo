@@ -9,6 +9,7 @@ import {
   RotateCcw,
   RotateCw,
   Satellite,
+  Sun,
 } from 'lucide-react'
 
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
@@ -47,6 +48,8 @@ interface CityPickerProps {
   orbiting: boolean
   onOrbit: () => void
   tallestLandmark: SkylineBuilding | null
+  sunPosition: number
+  onSunPositionChange: (value: number) => void
 }
 
 export default function CityPicker({
@@ -73,10 +76,13 @@ export default function CityPicker({
   orbiting,
   onOrbit,
   tallestLandmark,
+  sunPosition,
+  onSunPositionChange,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
   const exhPct = ((heightExaggeration - 1) / 2) * 100
+  const sunPct = (sunPosition / 24) * 100
 
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
   const cityPickerRef = useRef<HTMLDivElement>(null)
@@ -405,6 +411,29 @@ export default function CityPicker({
           step={10}
           value={Math.round(heightExaggeration * 100)}
           onChange={(event) => onHeightExaggerationChange(Number(event.target.value) / 100)}
+        />
+      </label>
+
+      {/* ── Sun position ───────────────────────────────────── */}
+      <label className="flex flex-col gap-1">
+        <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span className="flex items-center gap-1">
+            <Sun size={10} strokeWidth={1.8} />
+            Sun
+          </span>
+          <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+            {String(Math.floor(sunPosition)).padStart(2, '0')}:00
+          </span>
+        </span>
+        <input
+          type="range"
+          className="range-sm"
+          style={{ '--fill': `${sunPct}%` } as CSSProperties}
+          min={0}
+          max={24}
+          step={0.5}
+          value={sunPosition}
+          onChange={(event) => onSunPositionChange(Number(event.target.value))}
         />
       </label>
 
