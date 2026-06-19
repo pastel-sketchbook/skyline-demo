@@ -69,7 +69,7 @@ export const CITIES: City[] = [
     blurb: 'Midtown Manhattan, from the Empire State Building to supertalls.',
     center: { lat: 40.7549, lng: -73.984 },
     districtCenter: { lat: 40.7549, lng: -73.984 },
-    view: { zoom: 14, pitch: 55, bearing: -20 },
+    view: { zoom: 15.0, pitch: 55, bearing: -20 },
     seed: 21001,
     fillerCount: 260,
     landmarks: [
@@ -87,7 +87,7 @@ export const CITIES: City[] = [
     blurb: 'Downtown Dubai, dominated by the 828 m Burj Khalifa.',
     center: { lat: 25.195, lng: 55.275 },
     districtCenter: { lat: 25.195, lng: 55.275 },
-    view: { zoom: 13.8, pitch: 58, bearing: 30 },
+    view: { zoom: 15.0, pitch: 58, bearing: 30 },
     seed: 30055,
     fillerCount: 240,
     landmarks: [
@@ -105,7 +105,7 @@ export const CITIES: City[] = [
     blurb: 'Minato skyline, from Tokyo Tower to the new Azabudai Hills.',
     center: { lat: 35.66, lng: 139.745 },
     districtCenter: { lat: 35.66, lng: 139.745 },
-    view: { zoom: 14, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 42073,
     fillerCount: 260,
     landmarks: [
@@ -123,7 +123,7 @@ export const CITIES: City[] = [
     blurb: 'Pudong\u2019s futuristic towers line the Huangpu River.',
     center: { lat: 31.236, lng: 121.501 },
     districtCenter: { lat: 31.236, lng: 121.501 },
-    view: { zoom: 14, pitch: 55, bearing: -15 },
+    view: { zoom: 15.0, pitch: 55, bearing: -15 },
     seed: 53017,
     fillerCount: 250,
     landmarks: [
@@ -141,7 +141,7 @@ export const CITIES: City[] = [
     blurb: 'Victoria Harbour\u2019s dense forest of towering supertalls.',
     center: { lat: 22.285, lng: 114.158 },
     districtCenter: { lat: 22.285, lng: 114.158 },
-    view: { zoom: 13.8, pitch: 55, bearing: -30 },
+    view: { zoom: 15.0, pitch: 55, bearing: -30 },
     seed: 64019,
     fillerCount: 220,
     landmarks: [
@@ -159,7 +159,7 @@ export const CITIES: City[] = [
     blurb: 'The Windy City\u2019s lakefront skyline, anchored by the Sears Tower.',
     center: { lat: 41.882, lng: -87.628 },
     districtCenter: { lat: 41.882, lng: -87.628 },
-    view: { zoom: 13.8, pitch: 55, bearing: 15 },
+    view: { zoom: 15.0, pitch: 55, bearing: 15 },
     seed: 75043,
     fillerCount: 250,
     landmarks: [
@@ -177,7 +177,7 @@ export const CITIES: City[] = [
     blurb: 'Space City\u2019s downtown towers rise above Buffalo Bayou.',
     center: { lat: 29.76, lng: -95.37 },
     districtCenter: { lat: 29.76, lng: -95.37 },
-    view: { zoom: 13.8, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 86054,
     fillerCount: 230,
     landmarks: [
@@ -195,7 +195,7 @@ export const CITIES: City[] = [
     blurb: 'The Shard and the Gherkin pierce the London sky above the Thames.',
     center: { lat: 51.514, lng: -0.085 },
     districtCenter: { lat: 51.514, lng: -0.085 },
-    view: { zoom: 13.8, pitch: 55, bearing: -10 },
+    view: { zoom: 15.0, pitch: 55, bearing: -10 },
     seed: 91037,
     fillerCount: 240,
     landmarks: [
@@ -213,7 +213,7 @@ export const CITIES: City[] = [
     blurb: 'The Eiffel Tower and La D\u00e9fense define the Paris skyline.',
     center: { lat: 48.87, lng: 2.28 },
     districtCenter: { lat: 48.87, lng: 2.28 },
-    view: { zoom: 13.5, pitch: 55, bearing: -20 },
+    view: { zoom: 15.0, pitch: 55, bearing: -20 },
     seed: 97021,
     fillerCount: 200,
     landmarks: [
@@ -231,7 +231,7 @@ export const CITIES: City[] = [
     blurb: 'Marina Bay\u2019s futuristic skyline blends gardens and supertalls.',
     center: { lat: 1.281, lng: 103.857 },
     districtCenter: { lat: 1.281, lng: 103.857 },
-    view: { zoom: 13.5, pitch: 55, bearing: 15 },
+    view: { zoom: 15.0, pitch: 55, bearing: 15 },
     seed: 100003,
     fillerCount: 220,
     landmarks: [
@@ -249,7 +249,7 @@ export const CITIES: City[] = [
     blurb: 'The twin Petronas Towers anchor the KLCC skyline.',
     center: { lat: 3.157, lng: 101.711 },
     districtCenter: { lat: 3.157, lng: 101.711 },
-    view: { zoom: 13.5, pitch: 55, bearing: 25 },
+    view: { zoom: 15.0, pitch: 55, bearing: 25 },
     seed: 100009,
     fillerCount: 230,
     landmarks: [
@@ -267,7 +267,7 @@ export const CITIES: City[] = [
     blurb: 'The Chao Phraya riverfront rises with the MahaNakhon skyline.',
     center: { lat: 13.73, lng: 100.52 },
     districtCenter: { lat: 13.73, lng: 100.52 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100017,
     fillerCount: 230,
     landmarks: [
@@ -285,7 +285,7 @@ export const CITIES: City[] = [
     blurb: 'India\u2019s tallest residential towers line the Marine Drive skyline.',
     center: { lat: 19.076, lng: 72.877 },
     districtCenter: { lat: 19.076, lng: 72.877 },
-    view: { zoom: 13.5, pitch: 55, bearing: 5 },
+    view: { zoom: 15.0, pitch: 55, bearing: 5 },
     seed: 100023,
     fillerCount: 240,
     landmarks: [
@@ -303,7 +303,7 @@ export const CITIES: City[] = [
     blurb: 'Sydney Tower and Crown rise above the harbour and opera house.',
     center: { lat: -33.86, lng: 151.21 },
     districtCenter: { lat: -33.86, lng: 151.21 },
-    view: { zoom: 13.8, pitch: 55, bearing: -10 },
+    view: { zoom: 15.0, pitch: 55, bearing: -10 },
     seed: 100031,
     fillerCount: 200,
     landmarks: [
@@ -321,7 +321,7 @@ export const CITIES: City[] = [
     blurb: 'Australia 108 and Eureka Tower define the Southbank skyline.',
     center: { lat: -37.815, lng: 144.955 },
     districtCenter: { lat: -37.815, lng: 144.955 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100037,
     fillerCount: 220,
     landmarks: [
@@ -339,7 +339,7 @@ export const CITIES: City[] = [
     blurb: 'The CN Tower and Bay Street supertalls define Toronto\u2019s skyline.',
     center: { lat: 43.647, lng: -79.381 },
     districtCenter: { lat: 43.647, lng: -79.381 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100043,
     fillerCount: 230,
     landmarks: [
@@ -357,7 +357,7 @@ export const CITIES: City[] = [
     blurb: 'The North Shore mountains backdrop Vancouver\u2019s glass towers.',
     center: { lat: 49.282, lng: -123.12 },
     districtCenter: { lat: 49.282, lng: -123.12 },
-    view: { zoom: 13.8, pitch: 55, bearing: 5 },
+    view: { zoom: 15.0, pitch: 55, bearing: 5 },
     seed: 100049,
     fillerCount: 190,
     landmarks: [
@@ -375,7 +375,7 @@ export const CITIES: City[] = [
     blurb: 'Avenida Paulista\u2019s modernist towers shape S\u00e3o Paulo\u2019s skyline.',
     center: { lat: -23.546, lng: -46.634 },
     districtCenter: { lat: -23.546, lng: -46.634 },
-    view: { zoom: 13.5, pitch: 55, bearing: -5 },
+    view: { zoom: 15.0, pitch: 55, bearing: -5 },
     seed: 100057,
     fillerCount: 220,
     landmarks: [
@@ -393,7 +393,7 @@ export const CITIES: City[] = [
     blurb: 'Paseo de la Reforma\u2019s glass towers rise above Chapultepec.',
     center: { lat: 19.43, lng: -99.14 },
     districtCenter: { lat: 19.43, lng: -99.14 },
-    view: { zoom: 13.5, pitch: 55, bearing: 5 },
+    view: { zoom: 15.0, pitch: 55, bearing: 5 },
     seed: 100061,
     fillerCount: 200,
     landmarks: [
@@ -411,7 +411,7 @@ export const CITIES: City[] = [
     blurb: 'Puerto Madero\u2019s glass towers redefine the R\u00edo de la Plata skyline.',
     center: { lat: -34.6, lng: -58.38 },
     districtCenter: { lat: -34.6, lng: -58.38 },
-    view: { zoom: 13.5, pitch: 55, bearing: -5 },
+    view: { zoom: 15.0, pitch: 55, bearing: -5 },
     seed: 100069,
     fillerCount: 180,
     landmarks: [
@@ -429,7 +429,7 @@ export const CITIES: City[] = [
     blurb: 'The Fernsehturm anchors Berlin\u2019s low-rise yet iconic skyline.',
     center: { lat: 52.52, lng: 13.405 },
     districtCenter: { lat: 52.52, lng: 13.405 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100073,
     fillerCount: 180,
     landmarks: [
@@ -447,7 +447,7 @@ export const CITIES: City[] = [
     blurb: 'Las Cuatro Torres towers rise above the Paseo de la Castellana.',
     center: { lat: 40.42, lng: -3.69 },
     districtCenter: { lat: 40.42, lng: -3.69 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100079,
     fillerCount: 200,
     landmarks: [
@@ -465,7 +465,7 @@ export const CITIES: City[] = [
     blurb: 'Moscow City\u2019s futuristic towers rise above the Moskva River.',
     center: { lat: 55.752, lng: 37.622 },
     districtCenter: { lat: 55.752, lng: 37.622 },
-    view: { zoom: 13.5, pitch: 55, bearing: 20 },
+    view: { zoom: 15.0, pitch: 55, bearing: 20 },
     seed: 100087,
     fillerCount: 220,
     landmarks: [
@@ -483,7 +483,7 @@ export const CITIES: City[] = [
     blurb: 'The Bosphorus is framed by Istanbul\u2019s growing skyline of towers.',
     center: { lat: 41.08, lng: 28.98 },
     districtCenter: { lat: 41.08, lng: 28.98 },
-    view: { zoom: 13.5, pitch: 55, bearing: 15 },
+    view: { zoom: 15.0, pitch: 55, bearing: 15 },
     seed: 100093,
     fillerCount: 220,
     landmarks: [
@@ -501,7 +501,7 @@ export const CITIES: City[] = [
     blurb: 'Taipei 101 dominates the skyline above the Xinyi district.',
     center: { lat: 25.033, lng: 121.564 },
     districtCenter: { lat: 25.033, lng: 121.564 },
-    view: { zoom: 13.5, pitch: 55, bearing: -10 },
+    view: { zoom: 15.0, pitch: 55, bearing: -10 },
     seed: 100099,
     fillerCount: 210,
     landmarks: [
@@ -519,7 +519,7 @@ export const CITIES: City[] = [
     blurb: 'The Sudirman CBD towers define Jakarta\u2019s sprawling skyline.',
     center: { lat: -6.23, lng: 106.8 },
     districtCenter: { lat: -6.23, lng: 106.8 },
-    view: { zoom: 13.5, pitch: 55, bearing: 5 },
+    view: { zoom: 15.0, pitch: 55, bearing: 5 },
     seed: 100103,
     fillerCount: 240,
     landmarks: [
@@ -537,7 +537,7 @@ export const CITIES: City[] = [
     blurb: 'Makati\u2019s glass skyscrapers rise above Manila\u2019s historic bay.',
     center: { lat: 14.56, lng: 121.02 },
     districtCenter: { lat: 14.56, lng: 121.02 },
-    view: { zoom: 13.5, pitch: 55, bearing: 5 },
+    view: { zoom: 15.0, pitch: 55, bearing: 5 },
     seed: 100109,
     fillerCount: 220,
     landmarks: [
@@ -555,7 +555,7 @@ export const CITIES: City[] = [
     blurb: 'Al Hamra Tower anchors the Gulf skyline of Kuwait City.',
     center: { lat: 29.37, lng: 47.98 },
     districtCenter: { lat: 29.37, lng: 47.98 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100117,
     fillerCount: 180,
     landmarks: [
@@ -573,7 +573,7 @@ export const CITIES: City[] = [
     blurb: 'West Bay\u2019s futuristic towers line the Doha Corniche skyline.',
     center: { lat: 25.285, lng: 51.531 },
     districtCenter: { lat: 25.285, lng: 51.531 },
-    view: { zoom: 13.5, pitch: 55, bearing: -10 },
+    view: { zoom: 15.0, pitch: 55, bearing: -10 },
     seed: 100123,
     fillerCount: 200,
     landmarks: [
@@ -591,7 +591,7 @@ export const CITIES: City[] = [
     blurb: 'Kingdom Centre and Burj Rafal anchor the Saudi capital\u2019s skyline.',
     center: { lat: 24.71, lng: 46.67 },
     districtCenter: { lat: 24.71, lng: 46.67 },
-    view: { zoom: 13.5, pitch: 55, bearing: -5 },
+    view: { zoom: 15.0, pitch: 55, bearing: -5 },
     seed: 100129,
     fillerCount: 200,
     landmarks: [
@@ -609,7 +609,7 @@ export const CITIES: City[] = [
     blurb: 'The Corniche skyline shines with Burj Mohammed bin Rashid.',
     center: { lat: 24.45, lng: 54.38 },
     districtCenter: { lat: 24.45, lng: 54.38 },
-    view: { zoom: 13.5, pitch: 55, bearing: 15 },
+    view: { zoom: 15.0, pitch: 55, bearing: 15 },
     seed: 100137,
     fillerCount: 210,
     landmarks: [
@@ -627,7 +627,7 @@ export const CITIES: City[] = [
     blurb: 'Salesforce Tower and the Transamerica Pyramid define the Bay skyline.',
     center: { lat: 37.78, lng: -122.42 },
     districtCenter: { lat: 37.78, lng: -122.42 },
-    view: { zoom: 13.5, pitch: 55, bearing: -15 },
+    view: { zoom: 15.0, pitch: 55, bearing: -15 },
     seed: 100143,
     fillerCount: 210,
     landmarks: [
@@ -645,7 +645,7 @@ export const CITIES: City[] = [
     blurb: 'Wilshire Grand and the US Bank Tower anchor the LA skyline.',
     center: { lat: 34.05, lng: -118.25 },
     districtCenter: { lat: 34.05, lng: -118.25 },
-    view: { zoom: 13.5, pitch: 55, bearing: 10 },
+    view: { zoom: 15.0, pitch: 55, bearing: 10 },
     seed: 100151,
     fillerCount: 220,
     landmarks: [
@@ -663,7 +663,7 @@ export const CITIES: City[] = [
     blurb: 'Brickell\u2019s glass supertalls rise along Biscayne Bay.',
     center: { lat: 25.76, lng: -80.19 },
     districtCenter: { lat: 25.76, lng: -80.19 },
-    view: { zoom: 13.8, pitch: 55, bearing: -5 },
+    view: { zoom: 15.0, pitch: 55, bearing: -5 },
     seed: 100157,
     fillerCount: 210,
     landmarks: [
@@ -681,7 +681,7 @@ export const CITIES: City[] = [
     blurb: 'The Columbia Center anchors Seattle\u2019s skyline under Mount Rainier.',
     center: { lat: 47.61, lng: -122.33 },
     districtCenter: { lat: 47.61, lng: -122.33 },
-    view: { zoom: 13.8, pitch: 55, bearing: -10 },
+    view: { zoom: 15.0, pitch: 55, bearing: -10 },
     seed: 100163,
     fillerCount: 200,
     landmarks: [
