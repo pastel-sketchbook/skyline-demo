@@ -39,8 +39,8 @@ const SATELLITE_STYLE: StyleSpecification = {
   glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
 }
 
-// Free CARTO light vector basemap — no API key required.
-const VECTOR_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
+// Free CARTO Voyager vector basemap — more vibrant colors, no API key required.
+const VECTOR_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json'
 
 interface SkylineDeckProps {
   buildings: SkylineBuilding[]
