@@ -69,25 +69,29 @@ export default function CityPicker({
   return (
     <div className="card-frost animate-enter w-64 p-4 space-y-3">
       {/* ── Header ──────────────────────────────────────────── */}
-      <div className="flex items-start gap-2.5">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 text-white shadow-sm shadow-cyan-500/25 ring-1 ring-white/40">
-          <Building2 size={15} strokeWidth={1.8} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">deck.gl skyline</p>
-          <h1 className="font-serif text-xl leading-snug font-bold text-slate-800 tracking-tight">{city.name}</h1>
-          <p className="mt-0.5 inline-flex items-center gap-1 font-mono text-[9px] tabular-nums text-cyan-600/80">
-            <MapPin size={9} strokeWidth={2} />
-            {Math.abs(city.center.lat).toFixed(3)}°{city.center.lat >= 0 ? 'N' : 'S'}{' '}
-            {Math.abs(city.center.lng).toFixed(3)}°{city.center.lng >= 0 ? 'E' : 'W'}
-          </p>
-          <p className="mt-1 font-sans text-[11px] leading-snug text-slate-400">{city.blurb}</p>
-          {tallestLandmark && (
-            <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
-              ★ {tallestLandmark.name} · {tallestLandmark.height} m
+      <div className="flex flex-col space-y-1.5">
+        <div className="flex items-start gap-2.5">
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 text-white shadow-sm shadow-cyan-500/25 ring-1 ring-white/40">
+            <Building2 size={15} strokeWidth={1.8} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+              deck.gl skyline
             </p>
-          )}
+            <h1 className="font-serif text-xl leading-snug font-bold text-slate-800 tracking-tight">{city.name}</h1>
+            <p className="mt-0.5 inline-flex items-center gap-1 font-mono text-[9px] tabular-nums text-cyan-600/80">
+              <MapPin size={9} strokeWidth={2} />
+              {Math.abs(city.center.lat).toFixed(3)}°{city.center.lat >= 0 ? 'N' : 'S'}{' '}
+              {Math.abs(city.center.lng).toFixed(3)}°{city.center.lng >= 0 ? 'E' : 'W'}
+            </p>
+          </div>
         </div>
+        <p className="font-sans text-[11px] leading-snug text-slate-400">{city.blurb}</p>
+        {tallestLandmark && (
+          <p className="inline-flex w-fit items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
+            ★ {tallestLandmark.name} · {tallestLandmark.height} m
+          </p>
+        )}
       </div>
 
       {/* ── Divider ─────────────────────────────────────────── */}
