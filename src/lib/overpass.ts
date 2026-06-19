@@ -15,11 +15,17 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
 const CACHE_TTL = 60 * 60 * 1000
 const UA = 'skyline-demo/0.1 (runtime fetcher; +https://github.com/anomalyco/skyline-demo)'
 
+interface OsmNode {
+  lat: number
+  lon: number
+}
+
 interface OsmElement {
   type: 'way' | 'relation' | 'node'
   id: number
   tags?: Record<string, string>
   center?: { lat: number; lon: number }
+  geometry?: OsmNode[]
   lat?: number
   lon?: number
 }
@@ -37,7 +43,7 @@ function buildQuery(lat: number, lng: number, radius: number): string {
   way["building"]["height"](around:${radius},${lat},${lng});
   way["building"]["building:levels"](around:${radius},${lat},${lng});
 );
-out center;`
+out geom;`
 }
 
 function encodeQuery(query: string): string {
@@ -71,6 +77,10 @@ function parseHeight(tags?: Record<string, string>): number | null {
 function getCenter(el: OsmElement): { lat: number; lng: number } | null {
   if (el.center) return { lat: el.center.lat, lng: el.center.lon }
   if (el.lat !== undefined && el.lon !== undefined) return { lat: el.lat, lng: el.lon }
+  if (el.geometry && el.geometry.length > 0) {
+    const sum = el.geometry.reduce((acc, n) => ({ lat: acc.lat + n.lat, lng: acc.lng + n.lon }), { lat: 0, lng: 0 })
+    return { lat: sum.lat / el.geometry.length, lng: sum.lng / el.geometry.length }
+  }
   return null
 }
 
@@ -78,6 +88,21 @@ function deterministicSizes(id: number): [width: number, depth: number] {
   const wSeed = ((id * 16807) % 2147483647) / 2147483647
   const dSeed = ((id * 48271) % 2147483647) / 2147483647
   return [Math.round(15 + 50 * Math.abs(wSeed)), Math.round(15 + 50 * Math.abs(dSeed))]
+}
+
+/** Extract a closed [lng, lat] ring from OSM way geometry. Returns undefined
+ *  if the element has no usable geometry (e.g. `out center` response). */
+function extractPolygon(el: OsmElement): Array<[number, number]> | undefined {
+  const geo = el.geometry
+  if (!geo || geo.length < 4) return undefined
+  const ring: Array<[number, number]> = geo.map((n) => [n.lon, n.lat])
+  // Close the ring if not already closed
+  const first = ring[0]
+  const last = ring[ring.length - 1]
+  if (first[0] !== last[0] || first[1] !== last[1]) {
+    ring.push([first[0], first[1]])
+  }
+  return ring
 }
 
 export function parseOverpassResponse(data: { elements?: OsmElement[] }): BuildingSpec[] {
@@ -88,6 +113,7 @@ export function parseOverpassResponse(data: { elements?: OsmElement[] }): Buildi
     const height = parseHeight(el.tags)
     if (!height) continue
     const [width, depth] = deterministicSizes(el.id)
+    const polygon = extractPolygon(el)
     specs.push({
       id: `osm-${el.type}-${el.id}`,
       name: el.tags?.name ?? '',
@@ -97,6 +123,7 @@ export function parseOverpassResponse(data: { elements?: OsmElement[] }): Buildi
       width,
       depth,
       landmark: false,
+      polygon,
     })
   }
   specs.sort((a, b) => b.height - a.height)

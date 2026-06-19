@@ -9,6 +9,7 @@ import {
   heightToColor,
   mulberry32,
   rectFootprint,
+  toSkylineBuilding,
 } from './skyline'
 
 const SEOUL = { lat: 37.5125, lng: 127.1025 }
@@ -144,5 +145,45 @@ describe('buildSkyline', () => {
       expect(b.footprint).toHaveLength(4)
       expect(b.color).toHaveLength(3)
     }
+  })
+})
+
+describe('toSkylineBuilding', () => {
+  it('uses rectangular footprint when no polygon is provided', () => {
+    const spec = {
+      id: 'test-1',
+      lat: SEOUL.lat,
+      lng: SEOUL.lng,
+      width: 60,
+      depth: 40,
+      height: 100,
+      name: '',
+      landmark: false,
+    }
+    const b = toSkylineBuilding(spec)
+    expect(b.footprint).toHaveLength(4)
+  })
+
+  it('uses provided polygon instead of rectangular footprint', () => {
+    const polygon: Array<[number, number]> = [
+      [127.1, 37.51],
+      [127.101, 37.51],
+      [127.101, 37.511],
+      [127.1, 37.511],
+      [127.1, 37.51],
+    ]
+    const spec = {
+      id: 'test-2',
+      lat: SEOUL.lat,
+      lng: SEOUL.lng,
+      width: 60,
+      depth: 40,
+      height: 100,
+      name: '',
+      landmark: false,
+      polygon,
+    }
+    const b = toSkylineBuilding(spec)
+    expect(b.footprint).toEqual(polygon)
   })
 })

@@ -32,6 +32,9 @@ export interface BuildingSpec {
   name: string
   /** True for hand-curated landmarks, false for generated filler. */
   landmark: boolean
+  /** Real polygon footprint from OSM (closed [lng, lat] ring). When present,
+   *  this is used instead of the rectangular approximation. */
+  polygon?: Array<[number, number]>
 }
 
 /** A building ready to hand to a deck.gl PolygonLayer. */
@@ -235,7 +238,7 @@ export function generateBuildings({
 export function toSkylineBuilding(spec: BuildingSpec): SkylineBuilding {
   return {
     ...spec,
-    footprint: rectFootprint(spec, spec.width, spec.depth),
+    footprint: spec.polygon ?? rectFootprint(spec, spec.width, spec.depth),
     color: heightToBandColor(spec.height),
   }
 }

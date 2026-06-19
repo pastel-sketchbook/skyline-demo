@@ -14,6 +14,34 @@ const MOCK_RESPONSE = JSON.parse(`{
   ]
 }`)
 
+const MOCK_RESPONSE_WITH_GEOMETRY = JSON.parse(`{
+  "elements": [
+    {
+      "type":"way","id":2001,
+      "tags":{"height":"150","name":"Polygon Tower"},
+      "geometry":[
+        {"lat":37.510,"lon":127.100},
+        {"lat":37.510,"lon":127.101},
+        {"lat":37.511,"lon":127.101},
+        {"lat":37.511,"lon":127.100},
+        {"lat":37.510,"lon":127.100}
+      ]
+    },
+    {
+      "type":"way","id":2002,
+      "tags":{"height":"80"},
+      "center":{"lat":37.52,"lon":127.11},
+      "geometry":[
+        {"lat":37.520,"lon":127.110},
+        {"lat":37.520,"lon":127.112},
+        {"lat":37.522,"lon":127.112},
+        {"lat":37.522,"lon":127.110},
+        {"lat":37.520,"lon":127.110}
+      ]
+    }
+  ]
+}`)
+
 describe('parseOverpassResponse', () => {
   const buildings = parseOverpassResponse(MOCK_RESPONSE)
 
@@ -60,5 +88,42 @@ describe('parseOverpassResponse', () => {
   it('returns an empty array for no elements', () => {
     expect(parseOverpassResponse({})).toEqual([])
     expect(parseOverpassResponse({ elements: [] })).toEqual([])
+  })
+})
+
+describe('parseOverpassResponse with polygon geometry', () => {
+  const buildings = parseOverpassResponse(MOCK_RESPONSE_WITH_GEOMETRY)
+
+  it('extracts polygon ring from way geometry', () => {
+    const b = buildings.find((b) => b.id === 'osm-way-2001')
+    expect(b?.polygon).toBeDefined()
+    expect(b?.polygon).toHaveLength(5) // 4 vertices + closing point
+  })
+
+  it('uses [lng, lat] order in polygon ring', () => {
+    const b = buildings.find((b) => b.id === 'osm-way-2001')
+    expect(b?.polygon?.[0]).toEqual([127.1, 37.51])
+  })
+
+  it('closes the ring if not already closed', () => {
+    const b = buildings.find((b) => b.id === 'osm-way-2001')
+    const ring = b?.polygon
+    expect(ring?.[0]).toEqual(ring?.[ring.length - 1])
+  })
+
+  it('computes center from geometry when center field is absent', () => {
+    const b = buildings.find((b) => b.id === 'osm-way-2001')
+    // Average of geometry vertices: (37.510 + 37.510 + 37.511 + 37.511 + 37.510) / 5 = 37.5104
+    expect(b?.lat).toBeCloseTo(37.5104, 4)
+    expect(b?.lng).toBeCloseTo(127.1004, 4)
+  })
+
+  it('prefers explicit center field over geometry average', () => {
+    const b = buildings.find((b) => b.id === 'osm-way-2002')
+    expect(b?.polygon).toBeDefined()
+    expect(b?.polygon).toHaveLength(5)
+    // Uses the explicit center field, not geometry average
+    expect(b?.lat).toBe(37.52)
+    expect(b?.lng).toBe(127.11)
   })
 })
