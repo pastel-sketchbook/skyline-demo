@@ -170,7 +170,7 @@ export default function App() {
       const elapsed = time - startTime
       const t = Math.min(elapsed / ORBIT_DURATION, 1)
       const ease = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
-      const bearing = (startBearing + ease * 360) % 360
+      const bearing = startBearing + ease * 360
 
       setViewState((prev) => ({ ...prev, bearing }))
 
@@ -212,7 +212,7 @@ export default function App() {
         pendingOrbitRef.current = false
         const dest = getCity(cityId)
         const dist = haversineMeters(lat, lng, dest.center.lat, dest.center.lng)
-        if (dist < 200) setOrbiting(true)
+        if (dist < 200) requestAnimationFrame(() => setOrbiting(true))
       }
     }
 
