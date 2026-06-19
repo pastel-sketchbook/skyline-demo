@@ -40,6 +40,20 @@ function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number)
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
+class SpringFlyInterpolator extends FlyToInterpolator {
+  // biome-ignore lint/suspicious/noExplicitAny: deck.gl types are loose here
+  interpolateProps(startProps: any, endProps: any, t: number) {
+    // biome-ignore lint/suspicious/noExplicitAny: super returns untyped result
+    const result = super.interpolateProps(startProps, endProps, t) as any
+    const linearZoom = startProps.zoom + (endProps.zoom - startProps.zoom) * t
+    // Spring-like zoom: zoom in → zoom out → overshoot → settle
+    const decay = Math.max(0, 1 - t * 0.7)
+    const oscillation = Math.sin(t * Math.PI * 5)
+    result.zoom = linearZoom + oscillation * decay * 1.8
+    return result
+  }
+}
+
 function makeViewState(city: City): MapViewState {
   return {
     longitude: city.center.lng,
@@ -208,7 +222,7 @@ export default function App() {
     setViewState({
       ...makeViewState(c),
       transitionDuration: 2000,
-      transitionInterpolator: new FlyToInterpolator(),
+      transitionInterpolator: new SpringFlyInterpolator(),
     })
   }
 
