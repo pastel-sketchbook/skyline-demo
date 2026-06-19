@@ -1,12 +1,12 @@
 import type { MapViewState } from '@deck.gl/core'
 import { FlyToInterpolator, WebMercatorViewport } from '@deck.gl/core'
-import { Globe, KeyRound, Layers, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Globe, KeyRound, Layers, Pause, Play, Share2, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import CityPicker from '@/components/CityPicker'
 import SkylineDeck from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
-import { DEFAULT_CITY_ID, getCity } from '@/data/cities'
+import { CITIES, DEFAULT_CITY_ID, getCity } from '@/data/cities'
 import { fetchBuildingsForArea } from '@/lib/overpass'
 import type { BuildingSpec, MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
 import { buildSkyline, generateBuildings } from '@/lib/skyline'
@@ -89,8 +89,23 @@ async function fetchArea(
 }
 
 export default function App() {
-  const [cityId, setCityId] = useState(DEFAULT_CITY_ID)
-  const [viewState, setViewState] = useState<MapViewState>(() => makeViewState(getCity(DEFAULT_CITY_ID)))
+  const [cityId, setCityId] = useState(() => {
+    const params = new URLSearchParams(location.search)
+    const id = params.get('city') ?? DEFAULT_CITY_ID
+    return getCity(id)?.id ?? DEFAULT_CITY_ID
+  })
+  const [viewState, setViewState] = useState<MapViewState>(() => {
+    const params = new URLSearchParams(location.search)
+    const id = params.get('city') ?? DEFAULT_CITY_ID
+    const c = getCity(id)
+    return {
+      longitude: c.center.lng,
+      latitude: c.center.lat,
+      zoom: Number(params.get('zoom')) || c.view.zoom,
+      pitch: Number(params.get('pitch')) || c.view.pitch,
+      bearing: Number(params.get('bearing')) || c.view.bearing,
+    }
+  })
   const [basemap, setBasemap] = useState<BasemapMode>('vector')
   const [realBuildings, setRealBuildings] = useState<BuildingSpec[]>([])
   const [showSkyline, setShowSkyline] = useState(true)
@@ -99,6 +114,7 @@ export default function App() {
   const [tint, setTint] = useState<TintMode>('none')
   const [mapBgColor, setMapBgColor] = useState<MapBgColor>('slate')
   const [orbiting, setOrbiting] = useState(false)
+  const [touring, setTouring] = useState(false)
   const [selectedBuilding, setSelectedBuilding] = useState<SkylineBuilding | null>(null)
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
@@ -230,7 +246,7 @@ export default function App() {
     }, 400)
   }
 
-  const handleSelectCity = (id: string) => {
+  const handleSelectCity = useCallback((id: string) => {
     abortRef.current?.abort()
     if (debounceRef.current) clearTimeout(debounceRef.current)
     setOrbiting(false)
@@ -245,7 +261,17 @@ export default function App() {
       transitionDuration: 3000,
       transitionInterpolator: new SpringFlyInterpolator(),
     })
-  }
+  }, [])
+
+  // Refs pointing to latest values for async callbacks.
+  const selectCityRef = useRef<((id: string) => void) | null>(null)
+  const cityIdRef = useRef(cityId)
+  useEffect(() => {
+    cityIdRef.current = cityId
+  }, [cityId])
+  useEffect(() => {
+    selectCityRef.current = handleSelectCity
+  }, [handleSelectCity])
 
   const handleReset = () => {
     setOrbiting(false)
@@ -255,6 +281,86 @@ export default function App() {
   const handleBuildingClick = useCallback((building: SkylineBuilding) => {
     setSelectedBuilding(building)
   }, [])
+
+  const handlePrevCity = useCallback(() => {
+    setTouring(false)
+    const idx = CITIES.findIndex((c) => c.id === cityId)
+    handleSelectCity(CITIES[(idx - 1 + CITIES.length) % CITIES.length].id)
+  }, [cityId, handleSelectCity])
+
+  const handleNextCity = useCallback(() => {
+    setTouring(false)
+    const idx = CITIES.findIndex((c) => c.id === cityId)
+    handleSelectCity(CITIES[(idx + 1) % CITIES.length].id)
+  }, [cityId, handleSelectCity])
+
+  const [copiedUrl, setCopiedUrl] = useState(false)
+  const handleCopyUrl = useCallback(async () => {
+    await navigator.clipboard.writeText(location.href)
+    setCopiedUrl(true)
+    setTimeout(() => setCopiedUrl(false), 2000)
+  }, [])
+
+  // ── Tour mode ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!touring) return
+    const id = setInterval(() => {
+      const currentIdx = CITIES.findIndex((c) => c.id === cityIdRef.current)
+      if (currentIdx === -1) return
+      selectCityRef.current?.(CITIES[(currentIdx + 1) % CITIES.length].id)
+    }, 8000)
+    return () => clearInterval(id)
+  }, [touring])
+
+  // ── Keyboard shortcuts ─────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      switch (e.key) {
+        case ' ':
+          e.preventDefault()
+          setOrbiting((prev) => !prev)
+          break
+        case 'ArrowLeft': {
+          e.preventDefault()
+          setTouring(false)
+          const idx = CITIES.findIndex((c) => c.id === cityIdRef.current)
+          if (idx === -1) break
+          selectCityRef.current?.(CITIES[(idx - 1 + CITIES.length) % CITIES.length].id)
+          break
+        }
+        case 'ArrowRight': {
+          e.preventDefault()
+          setTouring(false)
+          const idx = CITIES.findIndex((c) => c.id === cityIdRef.current)
+          if (idx === -1) break
+          selectCityRef.current?.(CITIES[(idx + 1) % CITIES.length].id)
+          break
+        }
+        case 't':
+        case 'T':
+          e.preventDefault()
+          setTouring((prev) => !prev)
+          break
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
+  // ── URL sync ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (orbiting) return
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams()
+      params.set('city', cityId)
+      params.set('pitch', String(Math.round(viewState.pitch ?? 45)))
+      params.set('bearing', String(Math.round(viewState.bearing ?? 0)))
+      params.set('zoom', String((viewState.zoom ?? 15).toFixed(1)))
+      history.replaceState(null, '', `?${params.toString()}`)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [cityId, viewState.pitch, viewState.bearing, viewState.zoom, orbiting])
 
   return (
     <main className={`relative h-full w-full overflow-hidden ${MAP_BG_CLASSES[mapBgColor]}`}>
@@ -364,12 +470,60 @@ export default function App() {
         </div>
       </div>
 
-      {/* ── Attribution bar ────────────────────────────────────── */}
+      {/* ── Bottom bar ─────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center">
         <div
-          className="card-frost-inline animate-enter pointer-events-auto inline-flex items-center gap-2.5 px-4 py-2 font-mono text-[11px] text-slate-500"
+          className="card-frost-inline animate-enter pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] text-slate-500"
           style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
         >
+          {/* ── City nav ───────────────────────────────────── */}
+          <button
+            type="button"
+            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-cyan-600 active:scale-90"
+            onClick={handlePrevCity}
+            title="Previous city (←)"
+          >
+            <ArrowLeft size={13} strokeWidth={1.8} />
+          </button>
+          <button
+            type="button"
+            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-cyan-600 active:scale-90"
+            onClick={handleNextCity}
+            title="Next city (→)"
+          >
+            <ArrowRight size={13} strokeWidth={1.8} />
+          </button>
+          <span className="h-3 w-px bg-slate-300/60" />
+
+          {/* ── Tour toggle ─────────────────────────────────── */}
+          <button
+            type="button"
+            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 transition-all active:scale-90 ${
+              touring
+                ? 'bg-cyan-100 text-cyan-600 animate-pulse'
+                : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+            }`}
+            onClick={() => setTouring((prev) => !prev)}
+            title={touring ? 'Stop tour (T)' : 'Start tour (T)'}
+          >
+            {touring ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
+          </button>
+          <span className="h-3 w-px bg-slate-300/60" />
+
+          {/* ── Share URL ───────────────────────────────────── */}
+          <button
+            type="button"
+            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 transition-all active:scale-90 ${
+              copiedUrl ? 'bg-emerald-100 text-emerald-600' : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+            }`}
+            onClick={handleCopyUrl}
+            title="Copy shareable URL"
+          >
+            <Share2 size={13} strokeWidth={1.8} />
+          </button>
+          <span className="h-3 w-px bg-slate-300/60" />
+
+          {/* ── Attribution ─────────────────────────────────── */}
           <span className="flex items-center gap-1.5">
             <Layers size={12} strokeWidth={1.6} className="text-cyan-500" />
             deck.gl
