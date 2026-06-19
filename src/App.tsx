@@ -132,6 +132,7 @@ export default function App() {
   const [sunPosition, setSunPosition] = useState(12)
   const [searchQuery, setSearchQuery] = useState('')
   const [seedOverride, setSeedOverride] = useState<number | null>(null)
+  const [showLabels, setShowLabels] = useState(false)
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -446,6 +447,7 @@ export default function App() {
         palette={palette}
         onBuildingClick={handleBuildingClick}
         sunPosition={sunPosition}
+        showLabels={showLabels}
       />
 
       {/* ── Sky gradient overlay ──────────────────────────────── */}
@@ -582,6 +584,8 @@ export default function App() {
             seedOverride={seedOverride}
             onSeedOverrideChange={setSeedOverride}
             defaultSeed={city.seed}
+            showLabels={showLabels}
+            onToggleLabels={() => setShowLabels((prev) => !prev)}
           />
         </div>
       </div>

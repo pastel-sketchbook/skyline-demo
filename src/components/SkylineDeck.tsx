@@ -1,5 +1,5 @@
 import type { MapViewState, PickingInfo } from '@deck.gl/core'
-import { PolygonLayer } from '@deck.gl/layers'
+import { PolygonLayer, TextLayer } from '@deck.gl/layers'
 import { DeckGL } from '@deck.gl/react'
 import type { StyleSpecification } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -56,6 +56,7 @@ interface SkylineDeckProps {
   palette: PaletteName
   onBuildingClick: (building: SkylineBuilding) => void
   sunPosition: number
+  showLabels: boolean
 }
 
 function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
@@ -102,6 +103,7 @@ export default function SkylineDeck({
   palette,
   onBuildingClick,
   sunPosition,
+  showLabels,
 }: SkylineDeckProps) {
   const mapStyle = BASEMAP_STYLES[basemap]
   const bands = BUILDING_PALETTES[palette]
@@ -153,8 +155,27 @@ export default function SkylineDeck({
           if (info.object) onBuildingClick(info.object)
         },
       }),
+      ...(showLabels && showSkyline
+        ? [
+            new TextLayer<SkylineBuilding>({
+              id: 'skyline-labels',
+              data: buildings.filter((b) => b.landmark && b.name),
+              getPosition: (d) => [d.lng, d.lat],
+              getText: (d) => d.name,
+              getSize: 10,
+              getColor: [255, 255, 255, 220],
+              getTextAnchor: 'middle',
+              getAlignmentBaseline: 'bottom',
+              billboard: true,
+              fontFamily: 'Space Grotesk, sans-serif',
+              fontWeight: 600,
+              outlineWidth: 2,
+              outlineColor: [40, 40, 40, 180],
+            }),
+          ]
+        : []),
     ],
-    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick, material],
+    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick, material, showLabels],
   )
 
   return (

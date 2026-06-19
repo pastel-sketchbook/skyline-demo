@@ -12,6 +12,7 @@ import {
   Satellite,
   Search,
   Sun,
+  Tag,
 } from 'lucide-react'
 
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
@@ -59,6 +60,8 @@ interface CityPickerProps {
   seedOverride: number | null
   onSeedOverrideChange: (value: number | null) => void
   defaultSeed: number
+  showLabels: boolean
+  onToggleLabels: () => void
 }
 
 export default function CityPicker({
@@ -94,6 +97,8 @@ export default function CityPicker({
   seedOverride,
   onSeedOverrideChange,
   defaultSeed,
+  showLabels,
+  onToggleLabels,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
@@ -364,6 +369,29 @@ export default function CityPicker({
           <span
             className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform ${
               showSkyline ? 'translate-x-3.5' : 'translate-x-0.5'
+            }`}
+          />
+        </span>
+      </button>
+
+      {/* ── Labels toggle ────────────────────────────────────── */}
+      <button
+        type="button"
+        className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 transition-all hover:border-slate-400 hover:bg-slate-300/15"
+        onClick={onToggleLabels}
+      >
+        <span className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+          <Tag size={13} strokeWidth={1.8} className={showLabels ? 'text-cyan-600' : 'text-slate-400'} />
+          Labels
+        </span>
+        <span
+          className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
+            showLabels ? 'bg-gradient-to-r from-cyan-400 to-cyan-500' : 'bg-slate-300'
+          }`}
+        >
+          <span
+            className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform ${
+              showLabels ? 'translate-x-3.5' : 'translate-x-0.5'
             }`}
           />
         </span>
