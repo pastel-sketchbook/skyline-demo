@@ -51,7 +51,7 @@ export const CITIES: City[] = [
     blurb: 'Lotte World Tower anchors the Jamsil skyline along the Han River.',
     center: { lat: 37.5125, lng: 127.0982 },
     districtCenter: { lat: 37.5125, lng: 127.1005 },
-    view: { zoom: 14.2, pitch: 55, bearing: 20 },
+    view: { zoom: 15.0, pitch: 55, bearing: 20 },
     seed: 19880,
     fillerCount: 240,
     landmarks: [
