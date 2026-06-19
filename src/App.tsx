@@ -1,6 +1,18 @@
 import type { MapViewState } from '@deck.gl/core'
 import { FlyToInterpolator, WebMercatorViewport } from '@deck.gl/core'
-import { ArrowLeft, ArrowRight, Globe, KeyRound, Layers, Pause, Play, Share2, X } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Crosshair,
+  ExternalLink,
+  Globe,
+  KeyRound,
+  Layers,
+  Pause,
+  Play,
+  Share2,
+  X,
+} from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import CityPicker from '@/components/CityPicker'
@@ -282,6 +294,17 @@ export default function App() {
     setSelectedBuilding(building)
   }, [])
 
+  const handleZoomToBuilding = useCallback((building: SkylineBuilding) => {
+    setViewState((prev) => ({
+      ...prev,
+      longitude: building.lng,
+      latitude: building.lat,
+      zoom: Math.max(prev.zoom ?? 15, 16),
+      transitionDuration: 800,
+      transitionInterpolator: new SpringFlyInterpolator(),
+    }))
+  }, [])
+
   const handlePrevCity = useCallback(() => {
     setTouring(false)
     const idx = CITIES.findIndex((c) => c.id === cityId)
@@ -396,10 +419,10 @@ export default function App() {
       {/* ── Detail panel ──────────────────────────────────────── */}
       {selectedBuilding && (
         <div className="pointer-events-none absolute left-4 bottom-4 z-20">
-          <div className="card-frost pointer-events-auto w-56 p-3 space-y-1.5 animate-enter">
+          <div className="card-frost pointer-events-auto w-64 p-3 space-y-2 animate-enter">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
-                Building
+                {selectedBuilding.landmark ? 'Landmark' : 'Building'}
               </span>
               <button
                 type="button"
@@ -409,16 +432,27 @@ export default function App() {
                 <X size={12} strokeWidth={1.8} />
               </button>
             </div>
-            <p className="text-sm font-medium text-slate-800 leading-snug">{selectedBuilding.name}</p>
-            <div className="space-y-0.5 font-mono text-[11px] tabular-nums text-slate-500">
+            <p className="text-sm font-medium text-slate-800 leading-snug">
+              {selectedBuilding.name || 'Unnamed building'}
+            </p>
+            <div className="space-y-1 font-mono text-[11px] tabular-nums text-slate-500">
               <div className="flex justify-between">
                 <span className="text-slate-400">Height</span>
-                <span className="font-medium text-slate-700">{selectedBuilding.height} m</span>
+                <span className="font-medium text-slate-700">
+                  {selectedBuilding.height} m
+                  <span className="text-slate-400 ml-1">(~{Math.round(selectedBuilding.height / 3.5)} fl)</span>
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400">Footprint</span>
                 <span className="font-medium text-slate-700">
                   {selectedBuilding.width}×{selectedBuilding.depth} m
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Source</span>
+                <span className="font-medium text-slate-700">
+                  {selectedBuilding.id.startsWith('osm-') ? 'OpenStreetMap' : 'Generated'}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -431,11 +465,34 @@ export default function App() {
                 </span>
               </div>
             </div>
-            {selectedBuilding.landmark && (
-              <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
-                ★ Landmark
-              </span>
-            )}
+            <div className="flex items-center gap-1.5 pt-0.5">
+              {selectedBuilding.landmark && (
+                <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
+                  ★ Landmark
+                </span>
+              )}
+              <button
+                type="button"
+                className="inline-flex cursor-pointer items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-slate-600 transition-all hover:bg-slate-200"
+                onClick={() => handleZoomToBuilding(selectedBuilding)}
+                title="Zoom to building"
+              >
+                <Crosshair size={9} strokeWidth={2} />
+                Zoom
+              </button>
+              {selectedBuilding.id.startsWith('osm-') && (
+                <a
+                  href={`https://www.openstreetmap.org/way/${selectedBuilding.id.replace('osm-way-', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex cursor-pointer items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-slate-600 transition-all hover:bg-slate-200"
+                  title="View on OpenStreetMap"
+                >
+                  <ExternalLink size={9} strokeWidth={2} />
+                  OSM
+                </a>
+              )}
+            </div>
           </div>
         </div>
       )}
