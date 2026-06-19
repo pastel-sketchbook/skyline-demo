@@ -45,11 +45,10 @@ class SpringFlyInterpolator extends FlyToInterpolator {
   interpolateProps(startProps: any, endProps: any, t: number) {
     // biome-ignore lint/suspicious/noExplicitAny: super returns untyped result
     const result = super.interpolateProps(startProps, endProps, t) as any
-    const linearZoom = startProps.zoom + (endProps.zoom - startProps.zoom) * t
-    // Spring-like zoom: zoom in → zoom out → overshoot → settle
+    // Add spring oscillation on top of the parent's fly-to zoom curve
     const decay = Math.max(0, 1 - t * 0.7)
     const oscillation = Math.sin(t * Math.PI * 5)
-    result.zoom = linearZoom + oscillation * decay * 1.8
+    result.zoom = result.zoom + oscillation * decay * 1.8
     return result
   }
 }
