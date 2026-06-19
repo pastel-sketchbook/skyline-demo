@@ -53,19 +53,27 @@ interface SkylineDeckProps {
 function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
   if (!object) return null
   const label = object.name && object.name !== 'Building' ? object.name : null
-  const parts = [`<strong>${object.height} m</strong>`]
-  if (label) parts.unshift(`<span style="color:#6b7280">${label}</span>`)
-  if (object.landmark) parts.push('<span style="color:#d97706">landmark</span>')
+  const parts: string[] = []
+  if (label) parts.push(`<span style="color:#78706a;font-size:11px">${label}</span>`)
+  parts.push(
+    `<span style="font-weight:600">${object.height}<span style="font-weight:400;font-size:11px"> m</span></span>`,
+  )
+  if (object.landmark) {
+    parts.push(
+      '<span style="display:inline-flex;align-items:center;gap:3px;margin-top:3px;font-size:9px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:#b8860b;background:rgba(184,134,11,0.10);border:1px solid rgba(184,134,11,0.20);border-radius:4px;padding:1px 5px">&#9733; Landmark</span>',
+    )
+  }
   return {
     html: parts.join('<br/>'),
     style: {
-      background: 'rgba(255, 255, 255, 0.88)',
+      background: 'rgba(255, 255, 255, 0.92)',
       color: '#2c4a4e',
-      fontSize: '12px',
-      padding: '6px 8px',
-      borderRadius: '6px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-      backdropFilter: 'blur(6px)',
+      fontSize: '13px',
+      padding: '8px 10px',
+      borderRadius: '8px',
+      border: '1px solid rgba(196,188,180,0.3)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.10)',
+      backdropFilter: 'blur(8px)',
     },
   }
 }

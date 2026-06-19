@@ -152,25 +152,35 @@ export default function App() {
       </div>
 
       {/* Attribution bar */}
-      <div className="pointer-events-none absolute right-4 bottom-4 flex items-center gap-3 font-mono text-[11px] text-warm-400">
-        <span className="flex items-center gap-1">
-          <Layers size={12} strokeWidth={1.6} className="text-cyan-500" />
-          deck.gl
-        </span>
-        <span className="text-warm-300">·</span>
-        <span className="flex items-center gap-1">
-          <Globe size={12} strokeWidth={1.6} className="text-cyan-500" />
-          {basemap === 'satellite' ? 'ESRI satellite' : 'CARTO vector'}
-        </span>
-        <span className="text-warm-300">·</span>
-        <span className="flex items-center gap-1">
-          <KeyRound size={12} strokeWidth={1.6} className="text-cyan-500" />
-          no API key
-        </span>
-        <span className="text-warm-300">·</span>
-        <span className="tabular-nums">{buildings.length} buildings</span>
-        <span className="text-warm-300">·</span>
-        <span className="tabular-nums">{realBuildings.length > 0 ? 'OSM live' : 'generated'}</span>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center">
+        <div
+          className="card-frost-inline animate-enter pointer-events-auto inline-flex items-center gap-2.5 px-4 py-2 font-mono text-[11px] text-slate-500"
+          style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
+        >
+          <span className="flex items-center gap-1.5">
+            <Layers size={12} strokeWidth={1.6} className="text-cyan-500" />
+            deck.gl
+          </span>
+          <span className="h-3 w-px bg-slate-300/60" />
+          <span className="flex items-center gap-1.5">
+            <Globe size={12} strokeWidth={1.6} className="text-cyan-500" />
+            {basemap === 'satellite' ? 'ESRI satellite' : 'CARTO vector'}
+          </span>
+          <span className="h-3 w-px bg-slate-300/60" />
+          <span className="flex items-center gap-1.5">
+            <KeyRound size={12} strokeWidth={1.6} className="text-cyan-500" />
+            no API key
+          </span>
+          <span className="h-3 w-px bg-slate-300/60" />
+          <span className="tabular-nums">{buildings.length} buildings</span>
+          <span className="h-3 w-px bg-slate-300/60" />
+          <span className="inline-flex items-center gap-1.5">
+            <span
+              className={`inline-block h-1.5 w-1.5 rounded-full ${realBuildings.length > 0 ? 'bg-emerald-400' : 'bg-ember-400'}`}
+            />
+            {realBuildings.length > 0 ? 'OSM live' : 'generated'}
+          </span>
+        </div>
       </div>
     </main>
   )

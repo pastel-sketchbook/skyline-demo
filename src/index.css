@@ -4,41 +4,46 @@
 }
 
 @theme {
-  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif: "IBM Plex Serif", Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: "IBM Plex Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-  /* 60 : 30 : 10 palette tokens */
-  --color-paper-50: #fdfcfa;
-  --color-paper-100: #f9f7f3;
-  --color-paper-200: #f4f1ec;
-  --color-warm-600: #6b6560;
-  --color-warm-400: #9e9690;
-  --color-warm-300: #c4bcb4;
-  --color-cyan-500: #3aafb9;
-  --color-cyan-400: #64c5cc;
-  --color-cyan-600: #2a8f97;
-  --color-cyan-100: #ddf3f4;
+  /* Cooler urban palette — deep slate + cyan + warm ember */
+  --color-paper-50: #f4f5f6;
+  --color-paper-100: #e9ebee;
+  --color-paper-200: #d5d9df;
+  --color-slate-800: #1a1d24;
+  --color-slate-600: #484e5a;
+  --color-slate-500: #6b7280;
+  --color-slate-400: #8a909e;
+  --color-slate-300: #b3b8c4;
+  --color-ember-500: #e0714a;
+  --color-ember-400: #e8926f;
+  --color-ember-100: #fcedd9;
+  --color-cyan-500: #3ab0b9;
+  --color-cyan-400: #60c5cd;
+  --color-cyan-600: #278a92;
+  --color-cyan-100: #d7f0f2;
 }
 
-/* Override daisyUI pastel to a cohesive cyan-on-cream system */
+/* Override daisyUI pastel to a cooler urban palette */
 [data-theme="pastel"] {
   --p: 186 52% 48%; /* cyan primary */
   --pf: 186 56% 38%; /* primary focus */
   --pc: 0 0% 100%; /* primary content — white */
-  --s: 180 30% 58%; /* teal secondary */
-  --sf: 180 35% 48%; /* secondary focus */
-  --sc: 0 0% 100%; /* secondary content */
-  --a: 174 40% 47%; /* cyan-teal accent */
-  --af: 174 46% 37%; /* accent focus */
+  --s: 220 22% 22%; /* slate secondary */
+  --sf: 220 24% 16%; /* secondary focus */
+  --sc: 210 20% 96%; /* secondary content */
+  --a: 16 68% 52%; /* ember accent */
+  --af: 16 72% 42%; /* accent focus */
   --ac: 0 0% 100%; /* accent content */
-  --b1: 37 30% 97%; /* base-100: warm white */
-  --b2: 35 25% 93%; /* base-200: light parchment */
-  --b3: 33 20% 89%; /* base-300: deeper parchment */
-  --bc: 30 12% 28%; /* base-content: warm charcoal */
-  --n: 30 8% 42%; /* neutral: warm gray */
-  --nf: 30 10% 34%; /* neutral focus */
-  --nc: 37 30% 97%; /* neutral content */
+  --b1: 210 10% 96%; /* base-100: cool white */
+  --b2: 210 8% 92%; /* base-200: light stone */
+  --b3: 210 6% 86%; /* base-300: stone */
+  --bc: 220 12% 18%; /* base-content: deep slate */
+  --n: 220 8% 44%; /* neutral: slate gray */
+  --nf: 220 10% 36%; /* neutral focus */
+  --nc: 210 10% 96%; /* neutral content */
 }
 
 html,
@@ -55,36 +60,168 @@ body {
   overflow: hidden;
 }
 
-/* ── 60% dominant: warm paper-tint gradient ─────────────────────── */
+/* ── 60% dominant: cool stone background with dot-grid texture ──── */
 .bg-paper {
-  background: linear-gradient(
-    155deg,
-    var(--color-paper-50) 0%,
-    var(--color-paper-100) 40%,
-    var(--color-paper-200) 80%,
-    var(--color-paper-100) 100%
-  );
+  background-color: var(--color-paper-50);
+  background-image: radial-gradient(circle at 1px 1px, rgba(138, 144, 158, 0.12) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 
 /* ── 30% secondary: frosted card surface ────────────────────────── */
 .card-frost {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--color-warm-300);
-  border-radius: 0.75rem;
+  position: relative;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-slate-300);
+  border-radius: 1rem;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 4px 16px rgba(0, 0, 0, 0.05);
+    0 2px 4px rgba(0, 0, 0, 0.03),
+    0 8px 24px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease;
+}
+
+.card-frost:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 12px 32px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* 30% secondary: frosted card for the attribution bar */
+.card-frost-inline {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(179, 184, 196, 0.35);
+  border-radius: 0.75rem;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.03);
 }
 
 /* ── Divider ────────────────────────────────────────────────────── */
 .divider-subtle {
   height: 1px;
-  background: var(--color-warm-300);
-  opacity: 0.5;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-slate-300) 15%,
+    var(--color-slate-300) 85%,
+    transparent 100%
+  );
+  opacity: 0.4;
 }
 
-/* ── Orange range sliders for pitch/bearing ────────────────────── */
-.range-accent-orange {
-  accent-color: #e28c4a;
+/* ── Animations ──────────────────────────────────────────────────── */
+@keyframes skyline-enter {
+  from {
+    opacity: 0;
+    transform: translateX(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes shimmer-accent {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+.animate-enter {
+  animation: skyline-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer-accent 3s ease-in-out infinite;
+}
+
+.card-frost::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.5rem;
+  right: 1.5rem;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-600), var(--color-cyan-400));
+  background-size: 200% 100%;
+  opacity: 0.6;
+  animation: shimmer-accent 3s ease-in-out infinite;
+}
+
+/* ── Custom range slider (override daisyUI) ──────────────────────── */
+input[type="range"].range-sm {
+  height: 0.375rem;
+  border-radius: 9999px;
+  appearance: none;
+  -moz-appearance: none;
+  background: linear-gradient(to right, #d5d9df, #b3b8c4);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"].range-sm::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-ember-400), var(--color-ember-500));
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+input[type="range"].range-sm::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(224, 113, 74, 0.35);
+}
+
+input[type="range"].range-sm::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+
+input[type="range"].range-sm::-moz-range-track {
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #d5d9df, #b3b8c4);
+  border: none;
+}
+
+input[type="range"].range-sm::-moz-range-thumb {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-ember-400), var(--color-ember-500));
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
 }
