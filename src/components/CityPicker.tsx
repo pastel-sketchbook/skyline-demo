@@ -7,6 +7,7 @@ import {
   Map as MapIcon,
   MapPin,
   RotateCcw,
+  RotateCw,
   Satellite,
 } from 'lucide-react'
 
@@ -34,6 +35,10 @@ interface CityPickerProps {
   onBasemapChange: (mode: BasemapMode) => void
   showSkyline: boolean
   onToggleSkyline: () => void
+  heightExaggeration: number
+  onHeightExaggerationChange: (value: number) => void
+  orbiting: boolean
+  onOrbit: () => void
 }
 
 export default function CityPicker({
@@ -49,9 +54,14 @@ export default function CityPicker({
   onBasemapChange,
   showSkyline,
   onToggleSkyline,
+  heightExaggeration,
+  onHeightExaggerationChange,
+  orbiting,
+  onOrbit,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
+  const exhPct = ((heightExaggeration - 1) / 2) * 100
 
   return (
     <div className="card-frost animate-enter w-64 p-4 space-y-3">
@@ -194,15 +204,56 @@ export default function CityPicker({
           </span>
           <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">{Math.round(bearing)}°</span>
         </span>
+        <div className="flex items-center gap-2">
+          <input
+            type="range"
+            className="range-sm flex-1"
+            style={{ '--fill': `${bearingPct}%` } as CSSProperties}
+            min={-180}
+            max={180}
+            step={1}
+            value={bearing}
+            onChange={(event) => onBearingChange(Number(event.target.value))}
+          />
+          <button
+            type="button"
+            disabled={orbiting}
+            className={`inline-flex cursor-pointer items-center justify-center rounded-lg p-1.5 transition-all ${
+              orbiting
+                ? 'bg-cyan-100 text-cyan-600 animate-spin'
+                : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+            }`}
+            onClick={onOrbit}
+            title="Orbit 360°"
+          >
+            <RotateCw size={14} strokeWidth={1.8} />
+          </button>
+        </div>
+      </label>
+
+      {/* ── Divider ─────────────────────────────────────────── */}
+      <div className="divider-subtle" />
+
+      {/* ── Height exaggeration ─────────────────────────────── */}
+      <label className="flex flex-col gap-1">
+        <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span className="flex items-center gap-1">
+            <Building2 size={10} strokeWidth={1.8} />
+            Exaggeration
+          </span>
+          <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+            {heightExaggeration.toFixed(1)}×
+          </span>
+        </span>
         <input
           type="range"
           className="range-sm"
-          style={{ '--fill': `${bearingPct}%` } as CSSProperties}
-          min={-180}
-          max={180}
-          step={1}
-          value={bearing}
-          onChange={(event) => onBearingChange(Number(event.target.value))}
+          style={{ '--fill': `${exhPct}%` } as CSSProperties}
+          min={100}
+          max={300}
+          step={10}
+          value={Math.round(heightExaggeration * 100)}
+          onChange={(event) => onHeightExaggerationChange(Number(event.target.value) / 100)}
         />
       </label>
 

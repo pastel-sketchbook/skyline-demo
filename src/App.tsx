@@ -1,19 +1,20 @@
 import type { MapViewState } from '@deck.gl/core'
-import { Globe, KeyRound, Layers } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Globe, KeyRound, Layers, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import CityPicker from '@/components/CityPicker'
 import SkylineDeck from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { DEFAULT_CITY_ID, getCity } from '@/data/cities'
 import { fetchBuildingsForArea } from '@/lib/overpass'
-import type { BuildingSpec } from '@/lib/skyline'
+import type { BuildingSpec, SkylineBuilding } from '@/lib/skyline'
 import { buildSkyline, generateBuildings } from '@/lib/skyline'
 
 export type BasemapMode = 'satellite' | 'vector'
 
 const FETCH_RADIUS = 1400
 const MOVE_THRESHOLD_M = 400
+const ORBIT_DURATION = 10_000
 
 const R = 6_371_000
 
@@ -63,10 +64,14 @@ export default function App() {
   const [basemap, setBasemap] = useState<BasemapMode>('vector')
   const [realBuildings, setRealBuildings] = useState<BuildingSpec[]>([])
   const [showSkyline, setShowSkyline] = useState(true)
+  const [heightExaggeration, setHeightExaggeration] = useState(1)
+  const [orbiting, setOrbiting] = useState(false)
+  const [selectedBuilding, setSelectedBuilding] = useState<SkylineBuilding | null>(null)
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const orbitRafRef = useRef<number | undefined>(undefined)
 
   const city = getCity(cityId)
 
@@ -74,6 +79,7 @@ export default function App() {
   useEffect(() => {
     const c = getCity(cityId)
     setRealBuildings([])
+    setSelectedBuilding(null)
     lastFetchRef.current = null
 
     const center = { lat: c.center.lat, lng: c.center.lng }
@@ -95,6 +101,41 @@ export default function App() {
           })
     return buildSkyline([...c.landmarks, ...filler])
   }, [cityId, realBuildings])
+
+  // ── Orbit animation ──────────────────────────────────────────
+  // biome-ignore lint/correctness/useExhaustiveDependencies: capture bearing at orbit start
+  useEffect(() => {
+    if (!orbiting) return
+
+    const startBearing = viewState.bearing ?? 0
+    const startTime = performance.now()
+
+    function animate(time: number) {
+      const elapsed = time - startTime
+      const t = Math.min(elapsed / ORBIT_DURATION, 1)
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
+      const bearing = (startBearing + ease * 360) % 360
+
+      setViewState((prev) => ({ ...prev, bearing }))
+
+      if (t < 1) {
+        orbitRafRef.current = requestAnimationFrame(animate)
+      } else {
+        setOrbiting(false)
+      }
+    }
+
+    orbitRafRef.current = requestAnimationFrame(animate)
+    return () => {
+      if (orbitRafRef.current) cancelAnimationFrame(orbitRafRef.current)
+    }
+  }, [orbiting])
+
+  // Cancel orbit on city switch or manual bearing interaction.
+  const handleBearingChange = useCallback((bearing: number) => {
+    setOrbiting(false)
+    setViewState((prev) => ({ ...prev, bearing }))
+  }, [])
 
   const handleViewStateChange = (next: MapViewState) => {
     setViewState(next)
@@ -118,9 +159,20 @@ export default function App() {
   const handleSelectCity = (id: string) => {
     abortRef.current?.abort()
     if (debounceRef.current) clearTimeout(debounceRef.current)
+    setOrbiting(false)
+    setSelectedBuilding(null)
     setCityId(id)
     setViewState(makeViewState(getCity(id)))
   }
+
+  const handleReset = () => {
+    setOrbiting(false)
+    setViewState(makeViewState(city))
+  }
+
+  const handleBuildingClick = useCallback((building: SkylineBuilding) => {
+    setSelectedBuilding(building)
+  }, [])
 
   return (
     <main className="relative h-full w-full overflow-hidden bg-paper">
@@ -130,7 +182,66 @@ export default function App() {
         onViewStateChange={handleViewStateChange}
         basemap={basemap}
         showSkyline={showSkyline}
+        heightExaggeration={heightExaggeration}
+        onBuildingClick={handleBuildingClick}
       />
+
+      {/* ── Sky gradient overlay ──────────────────────────────── */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-10"
+        style={{
+          height: '35%',
+          background:
+            'linear-gradient(to bottom, rgba(232,146,111,0.10) 0%, rgba(252,237,217,0.05) 30%, transparent 100%)',
+        }}
+      />
+
+      {/* ── Detail panel ──────────────────────────────────────── */}
+      {selectedBuilding && (
+        <div className="pointer-events-none absolute left-4 bottom-4 z-20">
+          <div className="card-frost pointer-events-auto w-56 p-3 space-y-1.5 animate-enter">
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+                Building
+              </span>
+              <button
+                type="button"
+                className="inline-flex cursor-pointer items-center justify-center rounded p-0.5 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-slate-600"
+                onClick={() => setSelectedBuilding(null)}
+              >
+                <X size={12} strokeWidth={1.8} />
+              </button>
+            </div>
+            <p className="text-sm font-medium text-slate-800 leading-snug">{selectedBuilding.name}</p>
+            <div className="space-y-0.5 font-mono text-[11px] tabular-nums text-slate-500">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Height</span>
+                <span className="font-medium text-slate-700">{selectedBuilding.height} m</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Footprint</span>
+                <span className="font-medium text-slate-700">
+                  {selectedBuilding.width}×{selectedBuilding.depth} m
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">ID</span>
+                <span
+                  className="max-w-[8rem] truncate text-right font-medium text-slate-700"
+                  title={selectedBuilding.id}
+                >
+                  {selectedBuilding.id}
+                </span>
+              </div>
+            </div>
+            {selectedBuilding.landmark && (
+              <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
+                ★ Landmark
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="pointer-events-none absolute right-4 top-4 left-auto">
         <div className="pointer-events-auto inline-block">
@@ -142,16 +253,20 @@ export default function App() {
             basemap={basemap}
             onSelectCity={handleSelectCity}
             onPitchChange={(pitch) => setViewState((prev) => ({ ...prev, pitch }))}
-            onBearingChange={(bearing) => setViewState((prev) => ({ ...prev, bearing }))}
-            onReset={() => setViewState(makeViewState(city))}
+            onBearingChange={handleBearingChange}
+            onReset={handleReset}
             onBasemapChange={setBasemap}
             showSkyline={showSkyline}
             onToggleSkyline={() => setShowSkyline((prev) => !prev)}
+            heightExaggeration={heightExaggeration}
+            onHeightExaggerationChange={setHeightExaggeration}
+            orbiting={orbiting}
+            onOrbit={() => setOrbiting((prev) => !prev)}
           />
         </div>
       </div>
 
-      {/* Attribution bar */}
+      {/* ── Attribution bar ────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center">
         <div
           className="card-frost-inline animate-enter pointer-events-auto inline-flex items-center gap-2.5 px-4 py-2 font-mono text-[11px] text-slate-500"

@@ -48,6 +48,8 @@ interface SkylineDeckProps {
   onViewStateChange: (viewState: MapViewState) => void
   basemap: BasemapMode
   showSkyline: boolean
+  heightExaggeration: number
+  onBuildingClick: (building: SkylineBuilding) => void
 }
 
 function getTooltip({ object }: PickingInfo<SkylineBuilding>) {
@@ -84,6 +86,8 @@ export default function SkylineDeck({
   onViewStateChange,
   basemap,
   showSkyline,
+  heightExaggeration,
+  onBuildingClick,
 }: SkylineDeckProps) {
   const mapStyle = basemap === 'satellite' ? SATELLITE_STYLE : VECTOR_STYLE
 
@@ -99,7 +103,7 @@ export default function SkylineDeck({
         lineWidthMinPixels: 1,
         lineWidthMaxPixels: 3,
         getPolygon: (d) => d.footprint,
-        getElevation: (d) => d.height,
+        getElevation: (d) => d.height * heightExaggeration,
         getFillColor: (d) => [d.color[0], d.color[1], d.color[2], d.landmark ? 255 : 220],
         getLineColor: (d) => (d.landmark ? [120, 130, 130, 200] : [40, 40, 40, 180]),
         material: {
@@ -108,9 +112,12 @@ export default function SkylineDeck({
           shininess: 32,
           specularColor: [80, 80, 80],
         },
+        onClick: (info) => {
+          if (info.object) onBuildingClick(info.object)
+        },
       }),
     ],
-    [buildings, showSkyline],
+    [buildings, showSkyline, heightExaggeration, onBuildingClick],
   )
 
   return (
