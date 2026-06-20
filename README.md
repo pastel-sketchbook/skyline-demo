@@ -1,5 +1,7 @@
 # Skyline Demo
 
+**[Live Demo →](https://pastel-sketchbook.github.io/skyline-demo/)**
+
 A **deck.gl** city-skyline visualizer that renders 3D buildings over a
 free basemap — no API key required.
 
@@ -53,6 +55,7 @@ task test:watch      # Vitest in watch mode
 task check:all       # Biome + Vitest + type-check + build
 task build:data      # Fetch real OSM building data
 task gen:mp4         # Capture orbit as mp4 (dev server must be running)
+task deploy:gh       # Build for GitHub Pages
 ```
 
 Or run the underlying `bun run <script>` directly (see `package.json`).
