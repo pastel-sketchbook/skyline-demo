@@ -692,7 +692,7 @@ export default function App() {
         return (
           <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center">
             <div
-              className={`${dark ? 'card-frost-inline-dark' : 'card-frost-inline'} animate-enter pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] ${dark ? 'text-slate-400' : 'text-slate-500'}`}
+              className={`${dark ? 'card-frost-inline-dark' : 'card-frost-inline'} animate-enter pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[13px] ${dark ? 'text-slate-400' : 'text-slate-500'}`}
               style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
             >
               {/* ── City nav ───────────────────────────────────── */}
@@ -706,7 +706,7 @@ export default function App() {
                 onClick={handlePrevCity}
                 title="Previous city (←)"
               >
-                <ArrowLeft size={13} strokeWidth={1.8} />
+                <ArrowLeft size={15} strokeWidth={1.8} />
               </button>
               <button
                 type="button"
@@ -718,7 +718,7 @@ export default function App() {
                 onClick={handleNextCity}
                 title="Next city (→)"
               >
-                <ArrowRight size={13} strokeWidth={1.8} />
+                <ArrowRight size={15} strokeWidth={1.8} />
               </button>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
@@ -735,7 +735,7 @@ export default function App() {
                 onClick={() => setTouring((prev) => !prev)}
                 title={touring ? 'Stop tour (T)' : 'Start tour (T)'}
               >
-                {touring ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
+                {touring ? <Pause size={15} strokeWidth={1.8} /> : <Play size={15} strokeWidth={1.8} />}
               </button>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
@@ -752,7 +752,7 @@ export default function App() {
                 onClick={handleCopyUrl}
                 title="Copy shareable URL"
               >
-                <Share2 size={13} strokeWidth={1.8} />
+                <Share2 size={15} strokeWidth={1.8} />
               </button>
               {/* ── Export image ─────────────────────────────────── */}
               <button
@@ -768,23 +768,23 @@ export default function App() {
                 title="Export as PNG"
                 disabled={exporting}
               >
-                <Camera size={13} strokeWidth={1.8} />
+                <Camera size={15} strokeWidth={1.8} />
               </button>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
               {/* ── Attribution ─────────────────────────────────── */}
               <span className="flex items-center gap-1.5">
-                <Layers size={12} strokeWidth={1.6} className="text-cyan-500" />
+                <Layers size={14} strokeWidth={1.6} className="text-cyan-500" />
                 deck.gl
               </span>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
               <span className="flex items-center gap-1.5">
-                <Globe size={12} strokeWidth={1.6} className="text-cyan-500" />
+                <Globe size={14} strokeWidth={1.6} className="text-cyan-500" />
                 {basemap === 'satellite' ? 'ESRI satellite' : basemap === 'dark' ? 'CARTO dark' : 'CARTO vector'}
               </span>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
               <span className="flex items-center gap-1.5">
-                <KeyRound size={12} strokeWidth={1.6} className="text-cyan-500" />
+                <KeyRound size={14} strokeWidth={1.6} className="text-cyan-500" />
                 no API key
               </span>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />

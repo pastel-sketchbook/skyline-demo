@@ -137,11 +137,11 @@ export default function CityPicker({
   )
 
   return (
-    <div className={`${dark ? 'panel-frost-dark' : 'panel-frost'} h-full w-64`}>
+    <div className={`${dark ? 'panel-frost-dark' : 'panel-frost'} h-full w-[27rem]`}>
       <div className="panel-scroll h-full space-y-3 overflow-y-auto p-4">
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="flex flex-col space-y-1.5">
-          <p className="font-mono text-[9px] font-bold tracking-[0.15em] text-cyan-600 uppercase">deck.gl skyline</p>
+          <p className="font-mono text-[15px] font-bold tracking-[0.15em] text-cyan-600 uppercase">deck.gl skyline</p>
           <div className="flex items-start gap-2.5">
             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 text-white shadow-sm shadow-cyan-500/25 ring-1 ring-white/40">
               <Building2 size={15} strokeWidth={1.8} />
@@ -152,18 +152,18 @@ export default function CityPicker({
               >
                 {city.name}
               </h1>
-              <p className="mt-0.5 inline-flex items-center gap-1 font-mono text-[9px] tabular-nums text-cyan-600/80">
+              <p className="mt-0.5 inline-flex items-center gap-1 font-mono text-[15px] tabular-nums text-cyan-600/80">
                 <MapPin size={9} strokeWidth={2} />
                 {Math.abs(city.center.lat).toFixed(3)}°{city.center.lat >= 0 ? 'N' : 'S'}{' '}
                 {Math.abs(city.center.lng).toFixed(3)}°{city.center.lng >= 0 ? 'E' : 'W'}
               </p>
             </div>
           </div>
-          <p className={`font-sans text-[11px] leading-snug ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
+          <p className={`font-sans text-[15px] leading-snug ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
             {city.blurb}
           </p>
           {tallestLandmark && (
-            <p className="inline-flex w-fit items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
+            <p className="inline-flex w-fit items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[15px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
               ★ {tallestLandmark.name} · {tallestLandmark.height} m
             </p>
           )}
@@ -175,7 +175,7 @@ export default function CityPicker({
         {/* ── City selector ───────────────────────────────────── */}
         <label className="flex flex-col gap-1">
           <span
-            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center gap-1 font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <Layers size={10} strokeWidth={1.8} />
             City
@@ -183,7 +183,7 @@ export default function CityPicker({
           <div className="relative" ref={cityPickerRef}>
             <button
               type="button"
-              className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 text-sm outline-none transition-all ${
+              className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 text-base outline-none transition-all ${
                 dark
                   ? 'border-slate-600 bg-slate-800/70 text-slate-200 hover:border-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
                   : 'border-slate-300 bg-paper-50 text-slate-600 hover:border-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
@@ -211,7 +211,7 @@ export default function CityPicker({
                     {groupedCities.map(([country, cities]) => (
                       <div key={country} className="mb-1.5" style={{ breakInside: 'avoid' }}>
                         <p
-                          className={`mb-0.5 truncate rounded px-1.5 py-0.5 font-mono text-[8px] font-bold tracking-[0.12em] uppercase ${
+                          className={`mb-0.5 truncate rounded px-1.5 py-0.5 font-mono text-[12px] font-bold tracking-[0.12em] uppercase ${
                             dark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-500'
                           }`}
                         >
@@ -221,7 +221,7 @@ export default function CityPicker({
                           <button
                             key={option.id}
                             type="button"
-                            className={`block w-full cursor-pointer truncate rounded px-1.5 py-0.5 text-left text-[13px] font-semibold transition-all ${
+                            className={`block w-full cursor-pointer truncate rounded px-1.5 py-0.5 text-left text-[15px] font-semibold transition-all ${
                               dark ? 'hover:bg-slate-700 hover:text-cyan-400' : 'hover:bg-cyan-50 hover:text-cyan-700'
                             } ${option.id === city.id ? 'text-cyan-600' : dark ? 'text-slate-300' : 'text-slate-600'}`}
                             onClick={() => {
@@ -254,7 +254,7 @@ export default function CityPicker({
         {/* ── Basemap segmented control ─────────────────────────── */}
         <div className="flex flex-col gap-1">
           <span
-            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center gap-1 font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <MapIcon size={10} strokeWidth={1.8} />
             Basemap
@@ -266,7 +266,7 @@ export default function CityPicker({
               <button
                 key={mode}
                 type="button"
-                className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md py-1 text-xs font-medium transition-all ${
+                className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md py-1 text-sm font-medium transition-all ${
                   basemap === mode
                     ? 'bg-gradient-to-b from-cyan-400 to-cyan-500 text-white shadow-sm shadow-cyan-500/25'
                     : dark
@@ -289,7 +289,7 @@ export default function CityPicker({
         {/* ── Colors ──────────────────────────────────────────────── */}
         <div className="flex flex-col gap-1">
           <span
-            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center gap-1 font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <Eye size={10} strokeWidth={1.8} />
             Colors
@@ -300,7 +300,7 @@ export default function CityPicker({
             {/* Building palette */}
             <div className="flex flex-col gap-1">
               <span
-                className={`text-[9px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+                className={`text-[15px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
               >
                 Palette
               </span>
@@ -325,7 +325,7 @@ export default function CityPicker({
                       }}
                     />
                     <span
-                      className={`text-[10px] font-medium ${palette === p ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
+                      className={`text-[12px] font-medium ${palette === p ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
                     >
                       {p === 'default' ? 'Teal' : p === 'night' ? 'Night' : 'Mono'}
                     </span>
@@ -337,7 +337,7 @@ export default function CityPicker({
             {/* Tint */}
             <div className="flex flex-col gap-1">
               <span
-                className={`text-[9px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+                className={`text-[15px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
               >
                 Tint
               </span>
@@ -364,7 +364,7 @@ export default function CityPicker({
                   >
                     <span className={`h-3 w-3 shrink-0 rounded-full ring-1 ring-black/10 ${t.color}`} />
                     <span
-                      className={`text-[10px] font-medium ${tint === t.id ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
+                      className={`text-[12px] font-medium ${tint === t.id ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
                     >
                       {t.label}
                     </span>
@@ -376,7 +376,7 @@ export default function CityPicker({
             {/* Map background */}
             <div className="flex flex-col gap-1">
               <span
-                className={`text-[9px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+                className={`text-[15px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
               >
                 Background
               </span>
@@ -402,7 +402,7 @@ export default function CityPicker({
                   >
                     <span className={`h-3 w-3 shrink-0 rounded-sm ring-1 ring-black/10 ${bg.swatch}`} />
                     <span
-                      className={`text-[10px] font-medium ${mapBgColor === bg.id ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
+                      className={`text-[12px] font-medium ${mapBgColor === bg.id ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
                     >
                       {bg.label}
                     </span>
@@ -423,7 +423,7 @@ export default function CityPicker({
           }`}
           onClick={onToggleSkyline}
         >
-          <span className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
             <Building2 size={13} strokeWidth={1.8} className={showSkyline ? 'text-cyan-600' : 'text-slate-400'} />
             <span className={dark ? 'text-slate-300' : 'text-slate-600'}>Skyline</span>
           </span>
@@ -450,7 +450,7 @@ export default function CityPicker({
           }`}
           onClick={onToggleLabels}
         >
-          <span className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-slate-600">
             <Tag size={13} strokeWidth={1.8} className={showLabels ? 'text-cyan-600' : 'text-slate-400'} />
             <span className={dark ? 'text-slate-300' : 'text-slate-600'}>Labels</span>
           </span>
@@ -473,13 +473,13 @@ export default function CityPicker({
         {/* ── Pitch slider ────────────────────────────────────── */}
         <label className="flex flex-col gap-1">
           <span
-            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center justify-between font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <span className="flex items-center gap-1">
               <Eye size={10} strokeWidth={1.8} />
               Pitch
             </span>
-            <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">{Math.round(pitch)}°</span>
+            <span className="font-sans text-[15px] font-medium tabular-nums text-cyan-600">{Math.round(pitch)}°</span>
           </span>
           <input
             type="range"
@@ -496,13 +496,13 @@ export default function CityPicker({
         {/* ── Bearing slider ──────────────────────────────────── */}
         <label className="flex flex-col gap-1">
           <span
-            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center justify-between font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <span className="flex items-center gap-1">
               <Compass size={10} strokeWidth={1.8} />
               Bearing
             </span>
-            <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">{Math.round(bearing)}°</span>
+            <span className="font-sans text-[15px] font-medium tabular-nums text-cyan-600">{Math.round(bearing)}°</span>
           </span>
           <div className="flex items-center gap-2">
             <input
@@ -539,13 +539,13 @@ export default function CityPicker({
         {/* ── Height exaggeration ─────────────────────────────── */}
         <label className="flex flex-col gap-1">
           <span
-            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center justify-between font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <span className="flex items-center gap-1">
               <Building2 size={10} strokeWidth={1.8} />
               Exaggeration
             </span>
-            <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+            <span className="font-sans text-[15px] font-medium tabular-nums text-cyan-600">
               {heightExaggeration.toFixed(1)}×
             </span>
           </span>
@@ -564,13 +564,13 @@ export default function CityPicker({
         {/* ── Sun position ───────────────────────────────────── */}
         <div className="flex flex-col gap-1">
           <span
-            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center justify-between font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <span className="flex items-center gap-1">
               <Sun size={10} strokeWidth={1.8} />
               Sun
             </span>
-            <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+            <span className="font-sans text-[15px] font-medium tabular-nums text-cyan-600">
               {String(Math.floor(sunPosition)).padStart(2, '0')}:{sunPosition % 1 === 0 ? '00' : '30'}
             </span>
           </span>
@@ -580,7 +580,7 @@ export default function CityPicker({
             {/* Time context label */}
             <div className="flex items-center justify-between px-0.5">
               <span
-                className={`flex items-center gap-1 text-[9px] font-medium ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+                className={`flex items-center gap-1 text-[15px] font-medium ${dark ? 'text-slate-400' : 'text-slate-400'}`}
               >
                 <SunDim size={9} strokeWidth={2} className="text-amber-400" />
                 {sunPosition < 5
@@ -598,7 +598,7 @@ export default function CityPicker({
                             : 'Night'}
               </span>
               <span
-                className={`flex items-center gap-1 text-[9px] font-medium ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+                className={`flex items-center gap-1 text-[15px] font-medium ${dark ? 'text-slate-400' : 'text-slate-400'}`}
               >
                 {sunPosition < 6 || sunPosition >= 18 ? (
                   <>
@@ -626,7 +626,7 @@ export default function CityPicker({
             />
             {/* Time tick marks */}
             <div
-              className={`flex justify-between px-0.5 font-mono text-[8px] tabular-nums ${dark ? 'text-slate-500' : 'text-slate-300'}`}
+              className={`flex justify-between px-0.5 font-mono text-[12px] tabular-nums ${dark ? 'text-slate-500' : 'text-slate-300'}`}
             >
               <span>00</span>
               <span>06</span>
@@ -643,13 +643,13 @@ export default function CityPicker({
         {/* ── Seed ────────────────────────────────────────────── */}
         <label className="flex flex-col gap-1">
           <span
-            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center justify-between font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <span className="flex items-center gap-1">
               <Dice5 size={10} strokeWidth={1.8} />
               Seed
             </span>
-            <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+            <span className="font-sans text-[15px] font-medium tabular-nums text-cyan-600">
               {seedOverride ?? defaultSeed}
             </span>
           </span>
@@ -687,7 +687,7 @@ export default function CityPicker({
         {/* ── Height legend ───────────────────────────────────── */}
         <div className="flex flex-col gap-1">
           <span
-            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center gap-1 font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <Building2 size={10} strokeWidth={1.8} />
             Height bands
@@ -711,7 +711,7 @@ export default function CityPicker({
               </div>
             </div>
             {/* Band labels */}
-            <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 font-mono text-[8px] tabular-nums">
+            <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 font-mono text-[12px] tabular-nums">
               {HEIGHT_BANDS.map(([lo, hi, [r, g, b]]) => (
                 <span key={lo} className="flex items-center gap-0.5">
                   <span
@@ -733,21 +733,21 @@ export default function CityPicker({
         {/* ── Search ──────────────────────────────────────────── */}
         <label className="flex flex-col gap-1">
           <span
-            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+            className={`flex items-center justify-between font-mono text-[15px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
           >
             <span className="flex items-center gap-1">
               <Search size={10} strokeWidth={1.8} />
               Search
             </span>
             {searchQuery && (
-              <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+              <span className="font-sans text-[15px] font-medium tabular-nums text-cyan-600">
                 {filteredCount}/{totalCount}
               </span>
             )}
           </span>
           <input
             type="text"
-            className={`w-full rounded-lg border px-2.5 py-1.5 text-sm outline-none transition-all focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25 ${
+            className={`w-full rounded-lg border px-2.5 py-1.5 text-base outline-none transition-all focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25 ${
               dark
                 ? 'border-slate-600 bg-slate-800/70 text-slate-200 placeholder:text-slate-500'
                 : 'border-slate-300 bg-paper-50 text-slate-600 placeholder:text-slate-400'
@@ -761,7 +761,7 @@ export default function CityPicker({
         {/* ── Footer ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
           <span
-            className={`inline-flex items-center gap-2 font-mono text-[11px] tabular-nums ${dark ? 'text-slate-400' : 'text-slate-500'}`}
+            className={`inline-flex items-center gap-2 font-mono text-[15px] tabular-nums ${dark ? 'text-slate-400' : 'text-slate-500'}`}
           >
             <span
               className={`flex h-2 w-9 overflow-hidden rounded-full ${dark ? 'bg-slate-600/50' : 'bg-slate-300/50'}`}
@@ -775,7 +775,7 @@ export default function CityPicker({
               <span className={`font-medium ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
                 {searchQuery ? filteredCount : buildingCount}
               </span>
-              <span className={`text-[9px] tracking-wide uppercase ${dark ? 'text-slate-500' : 'text-slate-400'}`}>
+              <span className={`text-[15px] tracking-wide uppercase ${dark ? 'text-slate-500' : 'text-slate-400'}`}>
                 {searchQuery ? `of ${totalCount}` : ''} buildings
               </span>
               <span className="ml-0.5 inline-block h-1.5 w-1.5 animate-pulse-dot self-center rounded-full bg-cyan-400" />
@@ -783,7 +783,7 @@ export default function CityPicker({
           </span>
           <button
             type="button"
-            className={`inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-cyan-600 transition-all active:scale-95 ${
+            className={`inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[15px] font-medium text-cyan-600 transition-all active:scale-95 ${
               dark ? 'hover:bg-slate-700/50 hover:text-cyan-400' : 'hover:bg-cyan-100 hover:text-cyan-700'
             }`}
             onClick={onReset}
@@ -795,7 +795,7 @@ export default function CityPicker({
 
         {/* ── Attribution ────────────────────────────────────── */}
         <div
-          className={`pt-2 text-center font-mono text-[9px] tracking-wide uppercase ${dark ? 'text-slate-500' : 'text-slate-500'}`}
+          className={`pt-2 text-center font-mono text-[15px] tracking-wide uppercase ${dark ? 'text-slate-500' : 'text-slate-500'}`}
         >
           Presented by Pastel Project
         </div>
