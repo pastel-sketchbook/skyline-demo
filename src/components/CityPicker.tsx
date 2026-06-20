@@ -163,7 +163,7 @@ export default function CityPicker({
             {city.blurb}
           </p>
           {tallestLandmark && (
-            <p className="inline-flex w-fit items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[15px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
+            <p className="inline-flex w-fit items-center gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 font-mono text-[15px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
               ★ {tallestLandmark.name} · {tallestLandmark.height} m
             </p>
           )}
@@ -626,7 +626,7 @@ export default function CityPicker({
             />
             {/* Time tick marks */}
             <div
-              className={`flex justify-between px-0.5 font-mono text-[12px] tabular-nums ${dark ? 'text-slate-500' : 'text-slate-300'}`}
+              className={`flex justify-between px-0.5 font-mono text-[12px] tabular-nums ${dark ? 'text-slate-500' : 'text-slate-400'}`}
             >
               <span>00</span>
               <span>06</span>

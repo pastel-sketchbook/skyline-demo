@@ -543,7 +543,7 @@ export default function App() {
       {/* ── Detail panel ──────────────────────────────────────── */}
       {selectedBuilding && (
         <div className="pointer-events-none absolute left-4 bottom-4 z-20">
-          <div className="card-frost pointer-events-auto w-64 p-3 space-y-2 animate-enter">
+          <div className="card-frost pointer-events-auto w-64 p-3 space-y-2 animate-detail-enter">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
                 {selectedBuilding.landmark ? 'Landmark' : 'Building'}
@@ -556,10 +556,10 @@ export default function App() {
                 <X size={12} strokeWidth={1.8} />
               </button>
             </div>
-            <p className="text-sm font-medium text-slate-800 leading-snug">
+            <p className="text-base font-semibold text-slate-800 leading-snug line-clamp-2">
               {selectedBuilding.name || 'Unnamed building'}
             </p>
-            <div className="space-y-1 font-mono text-[15px] tabular-nums text-slate-500">
+            <div className="space-y-1 font-mono text-[13px] tabular-nums text-slate-500">
               <div className="flex justify-between">
                 <span className="text-slate-400">Height</span>
                 <span className="font-medium text-slate-700">
@@ -773,17 +773,17 @@ export default function App() {
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
               {/* ── Attribution ─────────────────────────────────── */}
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 opacity-60">
                 <Layers size={16} strokeWidth={1.6} className="text-cyan-500" />
                 deck.gl
               </span>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 opacity-60">
                 <Globe size={16} strokeWidth={1.6} className="text-cyan-500" />
                 {basemap === 'satellite' ? 'ESRI satellite' : basemap === 'dark' ? 'CARTO dark' : 'CARTO vector'}
               </span>
               <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 opacity-60">
                 <KeyRound size={16} strokeWidth={1.6} className="text-cyan-500" />
                 no API key
               </span>
