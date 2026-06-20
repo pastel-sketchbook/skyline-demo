@@ -290,3 +290,32 @@ input[type="range"].range-sm::-moz-range-thumb {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
+
+/* Sun slider: day/night gradient track instead of plain gray */
+input[type="range"].range-sun {
+  background:
+    linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-500)) no-repeat,
+    linear-gradient(
+      to right,
+      #1e293b 0%,
+      #1e293b 20%,
+      #f59e0b 28%,
+      #fbbf24 35%,
+      #60a5fa 50%,
+      #fbbf24 65%,
+      #f59e0b 72%,
+      #1e293b 80%,
+      #1e293b 100%
+    );
+  background-size:
+    var(--fill) 100%,
+    100% 100%;
+}
+
+input[type="range"].range-sun::-webkit-slider-thumb {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+input[type="range"].range-sun::-moz-range-thumb {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}

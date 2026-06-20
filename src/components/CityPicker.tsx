@@ -318,7 +318,7 @@ export default function CityPicker({
             {/* Tint */}
             <div className="flex flex-col gap-1">
               <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Tint</span>
-              <div className="flex gap-1.5">
+              <div className="grid grid-cols-2 gap-1.5">
                 {(
                   [
                     { id: 'none', label: 'None', color: 'bg-white ring-slate-200' },
@@ -330,7 +330,7 @@ export default function CityPicker({
                   <button
                     key={t.id}
                     type="button"
-                    className={`group flex flex-1 cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 transition-all ${
+                    className={`group flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 transition-all ${
                       tint === t.id
                         ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
                         : 'hover:bg-slate-300/20'
@@ -557,25 +557,16 @@ export default function CityPicker({
               </span>
             </div>
             {/* Slider with day/night gradient track */}
-            <div className="relative">
-              <div
-                className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full"
-                style={{
-                  background:
-                    'linear-gradient(to right, #1e293b 0%, #1e293b 20%, #f59e0b 28%, #fbbf24 35%, #60a5fa 50%, #fbbf24 65%, #f59e0b 72%, #1e293b 80%, #1e293b 100%)',
-                }}
-              />
-              <input
-                type="range"
-                className="range-sm relative z-10"
-                style={{ '--fill': `${sunPct}%` } as CSSProperties}
-                min={0}
-                max={24}
-                step={0.5}
-                value={sunPosition}
-                onChange={(event) => onSunPositionChange(Number(event.target.value))}
-              />
-            </div>
+            <input
+              type="range"
+              className="range-sm range-sun"
+              style={{ '--fill': `${sunPct}%` } as CSSProperties}
+              min={0}
+              max={24}
+              step={0.5}
+              value={sunPosition}
+              onChange={(event) => onSunPositionChange(Number(event.target.value))}
+            />
             {/* Time tick marks */}
             <div className="flex justify-between px-0.5 font-mono text-[8px] tabular-nums text-slate-300">
               <span>00</span>
@@ -651,14 +642,14 @@ export default function CityPicker({
               </div>
             </div>
             {/* Band labels */}
-            <div className="flex justify-between font-mono text-[8px] tabular-nums">
+            <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 font-mono text-[8px] tabular-nums">
               {HEIGHT_BANDS.map(([lo, hi, [r, g, b]]) => (
                 <span key={lo} className="flex items-center gap-0.5">
                   <span
-                    className="inline-block h-1.5 w-1.5 rounded-full"
+                    className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
                     style={{ backgroundColor: `rgb(${r},${g},${b})` }}
                   />
-                  <span className="text-slate-400">
+                  <span className="text-slate-400 truncate">
                     {lo}–{hi === Infinity ? '∞' : hi}
                   </span>
                 </span>
