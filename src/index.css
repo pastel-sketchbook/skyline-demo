@@ -388,6 +388,9 @@ input[type="range"].range-sun::-moz-range-thumb {
   background:
     linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-500)) no-repeat,
     linear-gradient(to right, #475569, #334155);
+  background-size:
+    var(--fill) 100%,
+    100% 100%;
 }
 
 .panel-frost-dark input[type="range"].range-sm::-webkit-slider-thumb {
