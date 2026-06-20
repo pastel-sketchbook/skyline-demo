@@ -7,11 +7,13 @@ import {
   Layers,
   Map as MapIcon,
   MapPin,
+  Moon,
   RotateCcw,
   RotateCw,
   Satellite,
   Search,
   Sun,
+  SunDim,
   Tag,
 } from 'lucide-react'
 
@@ -283,74 +285,95 @@ export default function CityPicker({
             <Eye size={10} strokeWidth={1.8} />
             Colors
           </span>
-          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2 space-y-2">
-            {/* Tint */}
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium text-slate-500">Tint</span>
-              <div className="flex gap-1">
-                {(['none', 'warm', 'cool', 'sepia'] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    className={`h-4 w-4 cursor-pointer rounded-full ring-1 transition-all ${
-                      tint === t ? 'scale-125 ring-cyan-400 ring-offset-1' : 'ring-slate-300 hover:ring-slate-400'
-                    } ${
-                      t === 'none'
-                        ? 'bg-white'
-                        : t === 'warm'
-                          ? 'bg-amber-200'
-                          : t === 'cool'
-                            ? 'bg-cyan-200'
-                            : 'bg-amber-300/70'
-                    }`}
-                    onClick={() => onTintChange(t)}
-                    title={t}
-                  />
-                ))}
-              </div>
-            </div>
+          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2.5 space-y-2.5">
             {/* Building palette */}
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium text-slate-500">Buildings</span>
-              <div className="flex gap-1">
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Palette</span>
+              <div className="flex gap-1.5">
                 {(['default', 'night', 'mono'] as const).map((p) => (
                   <button
                     key={p}
                     type="button"
-                    className={`flex cursor-pointer items-center gap-1 rounded-md px-1.5 py-0.5 text-[9px] font-medium transition-all ${
+                    className={`group flex flex-1 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-all ${
                       palette === p
-                        ? 'bg-cyan-100 text-cyan-700 ring-1 ring-cyan-300'
-                        : 'text-slate-500 hover:bg-slate-300/20'
+                        ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
+                        : 'hover:bg-slate-300/20'
                     }`}
                     onClick={() => onPaletteChange(p)}
                   >
                     <span
-                      className="inline-block h-2 w-3 rounded-sm"
+                      className="h-3 w-5 shrink-0 rounded-sm ring-1 ring-black/5"
                       style={{
                         background: `linear-gradient(to right, ${BUILDING_PALETTES[p].map(([, , c]) => `rgb(${c[0]},${c[1]},${c[2]})`).join(',')})`,
                       }}
                     />
-                    {p === 'default' ? 'Teal' : p === 'night' ? 'Night' : 'Mono'}
+                    <span className={`text-[10px] font-medium ${palette === p ? 'text-cyan-700' : 'text-slate-500'}`}>
+                      {p === 'default' ? 'Teal' : p === 'night' ? 'Night' : 'Mono'}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
-            {/* Map background */}
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium text-slate-500">Map bg</span>
-              <div className="flex gap-1">
-                {(['slate', 'charcoal', 'white'] as const).map((bg) => (
+
+            {/* Tint */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Tint</span>
+              <div className="flex gap-1.5">
+                {(
+                  [
+                    { id: 'none', label: 'None', color: 'bg-white ring-slate-200' },
+                    { id: 'warm', label: 'Warm', color: 'bg-amber-200' },
+                    { id: 'cool', label: 'Cool', color: 'bg-cyan-200' },
+                    { id: 'sepia', label: 'Sepia', color: 'bg-amber-300/70' },
+                  ] as const
+                ).map((t) => (
                   <button
-                    key={bg}
+                    key={t.id}
                     type="button"
-                    className={`h-4 w-4 cursor-pointer rounded-full ring-1 transition-all ${
-                      mapBgColor === bg
-                        ? 'scale-125 ring-cyan-400 ring-offset-1'
-                        : 'ring-slate-300 hover:ring-slate-400'
-                    } ${bg === 'slate' ? 'bg-slate-200' : bg === 'charcoal' ? 'bg-slate-700' : 'bg-white'}`}
-                    onClick={() => onMapBgColorChange(bg)}
-                    title={bg}
-                  />
+                    className={`group flex flex-1 cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 transition-all ${
+                      tint === t.id
+                        ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
+                        : 'hover:bg-slate-300/20'
+                    }`}
+                    onClick={() => onTintChange(t.id)}
+                  >
+                    <span className={`h-3 w-3 shrink-0 rounded-full ring-1 ring-black/10 ${t.color}`} />
+                    <span className={`text-[10px] font-medium ${tint === t.id ? 'text-cyan-700' : 'text-slate-500'}`}>
+                      {t.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Map background */}
+            <div className="flex flex-col gap-1">
+              <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Background</span>
+              <div className="flex gap-1.5">
+                {(
+                  [
+                    { id: 'slate', label: 'Stone', swatch: 'bg-slate-200' },
+                    { id: 'charcoal', label: 'Dark', swatch: 'bg-slate-700' },
+                    { id: 'white', label: 'White', swatch: 'bg-white ring-slate-200' },
+                  ] as const
+                ).map((bg) => (
+                  <button
+                    key={bg.id}
+                    type="button"
+                    className={`group flex flex-1 cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 transition-all ${
+                      mapBgColor === bg.id
+                        ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
+                        : 'hover:bg-slate-300/20'
+                    }`}
+                    onClick={() => onMapBgColorChange(bg.id)}
+                  >
+                    <span className={`h-3 w-3 shrink-0 rounded-sm ring-1 ring-black/10 ${bg.swatch}`} />
+                    <span
+                      className={`text-[10px] font-medium ${mapBgColor === bg.id ? 'text-cyan-700' : 'text-slate-500'}`}
+                    >
+                      {bg.label}
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
@@ -490,27 +513,79 @@ export default function CityPicker({
         </label>
 
         {/* ── Sun position ───────────────────────────────────── */}
-        <label className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1">
           <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
             <span className="flex items-center gap-1">
               <Sun size={10} strokeWidth={1.8} />
               Sun
             </span>
             <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
-              {String(Math.floor(sunPosition)).padStart(2, '0')}:00
+              {String(Math.floor(sunPosition)).padStart(2, '0')}:{sunPosition % 1 === 0 ? '00' : '30'}
             </span>
           </span>
-          <input
-            type="range"
-            className="range-sm"
-            style={{ '--fill': `${sunPct}%` } as CSSProperties}
-            min={0}
-            max={24}
-            step={0.5}
-            value={sunPosition}
-            onChange={(event) => onSunPositionChange(Number(event.target.value))}
-          />
-        </label>
+          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2.5 space-y-2">
+            {/* Time context label */}
+            <div className="flex items-center justify-between px-0.5">
+              <span className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
+                <SunDim size={9} strokeWidth={2} className="text-amber-400" />
+                {sunPosition < 5
+                  ? 'Night'
+                  : sunPosition < 7
+                    ? 'Dawn'
+                    : sunPosition < 10
+                      ? 'Morning'
+                      : sunPosition < 14
+                        ? 'Midday'
+                        : sunPosition < 17
+                          ? 'Afternoon'
+                          : sunPosition < 19
+                            ? 'Dusk'
+                            : 'Night'}
+              </span>
+              <span className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
+                {sunPosition < 6 || sunPosition >= 18 ? (
+                  <>
+                    <Moon size={9} strokeWidth={2} className="text-indigo-400" />
+                    Dark mode
+                  </>
+                ) : (
+                  <>
+                    <Sun size={9} strokeWidth={2} className="text-amber-400" />
+                    Day mode
+                  </>
+                )}
+              </span>
+            </div>
+            {/* Slider with day/night gradient track */}
+            <div className="relative">
+              <div
+                className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full"
+                style={{
+                  background:
+                    'linear-gradient(to right, #1e293b 0%, #1e293b 20%, #f59e0b 28%, #fbbf24 35%, #60a5fa 50%, #fbbf24 65%, #f59e0b 72%, #1e293b 80%, #1e293b 100%)',
+                }}
+              />
+              <input
+                type="range"
+                className="range-sm relative z-10"
+                style={{ '--fill': `${sunPct}%` } as CSSProperties}
+                min={0}
+                max={24}
+                step={0.5}
+                value={sunPosition}
+                onChange={(event) => onSunPositionChange(Number(event.target.value))}
+              />
+            </div>
+            {/* Time tick marks */}
+            <div className="flex justify-between px-0.5 font-mono text-[8px] tabular-nums text-slate-300">
+              <span>00</span>
+              <span>06</span>
+              <span>12</span>
+              <span>18</span>
+              <span>24</span>
+            </div>
+          </div>
+        </div>
 
         {/* ── Divider ─────────────────────────────────────────── */}
         <div className="divider-subtle" />
@@ -557,13 +632,38 @@ export default function CityPicker({
         <div className="flex flex-col gap-1">
           <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
             <Building2 size={10} strokeWidth={1.8} />
-            Height
+            Height bands
           </span>
-          <div className="h-2 w-full rounded-full ring-1 ring-slate-300/60" style={{ background: LEGEND_GRADIENT }} />
-          <div className="flex justify-between font-mono text-[9px] tabular-nums text-slate-400">
-            <span>0 m</span>
-            <span className="normal-nums tracking-wide text-slate-300 uppercase">taller →</span>
-            <span>400 m+</span>
+          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2.5 space-y-2">
+            {/* Gradient bar with tick marks */}
+            <div className="relative">
+              <div
+                className="h-2.5 w-full rounded-full ring-1 ring-slate-300/60"
+                style={{ background: LEGEND_GRADIENT }}
+              />
+              {/* Band boundary ticks */}
+              <div className="absolute inset-x-0 top-0 flex h-2.5 items-center">
+                {HEIGHT_BANDS.map(([lo], i) => {
+                  if (i === 0) return null
+                  const pct = (lo / 500) * 100
+                  return <span key={lo} className="absolute h-full w-px bg-white/70" style={{ left: `${pct}%` }} />
+                })}
+              </div>
+            </div>
+            {/* Band labels */}
+            <div className="flex justify-between font-mono text-[8px] tabular-nums">
+              {HEIGHT_BANDS.map(([lo, hi, [r, g, b]]) => (
+                <span key={lo} className="flex items-center gap-0.5">
+                  <span
+                    className="inline-block h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: `rgb(${r},${g},${b})` }}
+                  />
+                  <span className="text-slate-400">
+                    {lo}–{hi === Infinity ? '∞' : hi}
+                  </span>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
