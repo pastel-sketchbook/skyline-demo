@@ -134,6 +134,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [seedOverride, setSeedOverride] = useState<number | null>(null)
   const [showLabels, setShowLabels] = useState(false)
+
+  // Saved daytime basemap/palette so we can restore after night auto-switch.
+  const savedDayRef = useRef<{ basemap: BasemapMode; palette: PaletteName } | null>(null)
+  const manualBasemapRef = useRef(false)
   const [pickerOpen, setPickerOpen] = useState(() => {
     const params = new URLSearchParams(location.search)
     return params.get('panel') !== '0'
@@ -364,6 +368,24 @@ export default function App() {
     handleSelectCity(CITIES[(idx + 1) % CITIES.length].id)
   }, [cityId, handleSelectCity])
 
+  const handleBasemapChange = useCallback(
+    (mode: BasemapMode) => {
+      const isNight = sunPosition < 6 || sunPosition >= 18
+      if (isNight) manualBasemapRef.current = true
+      setBasemap(mode)
+    },
+    [sunPosition],
+  )
+
+  const handlePaletteChange = useCallback(
+    (p: PaletteName) => {
+      const isNight = sunPosition < 6 || sunPosition >= 18
+      if (isNight) manualBasemapRef.current = true
+      setPalette(p)
+    },
+    [sunPosition],
+  )
+
   const [copiedUrl, setCopiedUrl] = useState(false)
   const [exporting, setExporting] = useState(false)
   const handleCopyUrl = useCallback(async () => {
@@ -443,6 +465,32 @@ export default function App() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
+
+  // ── Night mode: auto-switch basemap + palette at dawn/dusk ──────
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only react to sun position changes
+  useEffect(() => {
+    const isNight = sunPosition < 6 || sunPosition >= 18
+    if (isNight) {
+      // Entering night — save current daytime settings if not already saved.
+      if (!savedDayRef.current) {
+        savedDayRef.current = { basemap, palette }
+      }
+      if (!manualBasemapRef.current && basemap !== 'dark') setBasemap('dark')
+      if (palette !== 'night') setPalette('night')
+    } else {
+      // Entering day — restore saved settings (or respect manual override).
+      if (savedDayRef.current) {
+        if (manualBasemapRef.current) {
+          // User changed basemap during night — treat as their new daytime pick.
+          savedDayRef.current = { basemap, palette }
+        }
+        setBasemap(savedDayRef.current.basemap)
+        setPalette(savedDayRef.current.palette)
+        savedDayRef.current = null
+        manualBasemapRef.current = false
+      }
+    }
+  }, [sunPosition]) // only re-run when sun changes
 
   // ── URL sync ──────────────────────────────────────────────────
   useEffect(() => {
@@ -601,8 +649,8 @@ export default function App() {
             onPitchChange={(pitch) => setViewState((prev) => ({ ...prev, pitch }))}
             onBearingChange={handleBearingChange}
             onReset={handleReset}
-            onBasemapChange={setBasemap}
-            onPaletteChange={setPalette}
+            onBasemapChange={handleBasemapChange}
+            onPaletteChange={handlePaletteChange}
             onTintChange={setTint}
             onMapBgColorChange={setMapBgColor}
             showSkyline={showSkyline}
