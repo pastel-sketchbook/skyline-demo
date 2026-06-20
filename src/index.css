@@ -159,6 +159,54 @@ body {
   background: rgba(100, 116, 139, 0.4);
 }
 
+/* Dark variant of the sidebar panel */
+.panel-frost-dark {
+  position: relative;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  border-right: 0;
+  border-radius: 1rem 0 0 1rem;
+  box-shadow:
+    -2px 0 4px rgba(0, 0, 0, 0.1),
+    -8px 0 24px rgba(0, 0, 0, 0.2),
+    -1px 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.panel-frost-dark::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-600), var(--color-cyan-400));
+  background-size: 200% 100%;
+  opacity: 0.85;
+  animation: shimmer-accent 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Dark scrollbar */
+.panel-frost-dark .panel-scroll {
+  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+}
+
+.panel-frost-dark .panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+}
+
+/* Dark variant of the bottom bar */
+.card-frost-inline-dark {
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  border-radius: 0.75rem;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
 /* ── Divider ────────────────────────────────────────────────────── */
 .divider-subtle {
   height: 1px;

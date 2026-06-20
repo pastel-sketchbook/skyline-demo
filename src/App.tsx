@@ -671,6 +671,7 @@ export default function App() {
             defaultSeed={city.seed}
             showLabels={showLabels}
             onToggleLabels={() => setShowLabels((prev) => !prev)}
+            dark={basemap === 'dark' || sunPosition < 6 || sunPosition >= 18}
           />
           <button
             type="button"
@@ -686,98 +687,119 @@ export default function App() {
       </div>
 
       {/* ── Bottom bar ─────────────────────────────────────────── */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center">
-        <div
-          className="card-frost-inline animate-enter pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] text-slate-500"
-          style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
-        >
-          {/* ── City nav ───────────────────────────────────── */}
-          <button
-            type="button"
-            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 outline-none transition-all hover:bg-slate-300/20 hover:text-cyan-600 focus:ring-2 focus:ring-cyan-400/25 active:scale-90"
-            onClick={handlePrevCity}
-            title="Previous city (←)"
-          >
-            <ArrowLeft size={13} strokeWidth={1.8} />
-          </button>
-          <button
-            type="button"
-            className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 outline-none transition-all hover:bg-slate-300/20 hover:text-cyan-600 focus:ring-2 focus:ring-cyan-400/25 active:scale-90"
-            onClick={handleNextCity}
-            title="Next city (→)"
-          >
-            <ArrowRight size={13} strokeWidth={1.8} />
-          </button>
-          <span className="h-3 w-px bg-slate-300/60" />
+      {(() => {
+        const dark = basemap === 'dark' || sunPosition < 6 || sunPosition >= 18
+        return (
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center">
+            <div
+              className={`${dark ? 'card-frost-inline-dark' : 'card-frost-inline'} animate-enter pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 font-mono text-[11px] ${dark ? 'text-slate-400' : 'text-slate-500'}`}
+              style={{ animationDelay: '0.15s', animationFillMode: 'backwards' }}
+            >
+              {/* ── City nav ───────────────────────────────────── */}
+              <button
+                type="button"
+                className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
+                  dark
+                    ? 'text-slate-400 hover:bg-slate-600/30 hover:text-cyan-400'
+                    : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                }`}
+                onClick={handlePrevCity}
+                title="Previous city (←)"
+              >
+                <ArrowLeft size={13} strokeWidth={1.8} />
+              </button>
+              <button
+                type="button"
+                className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
+                  dark
+                    ? 'text-slate-400 hover:bg-slate-600/30 hover:text-cyan-400'
+                    : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                }`}
+                onClick={handleNextCity}
+                title="Next city (→)"
+              >
+                <ArrowRight size={13} strokeWidth={1.8} />
+              </button>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
-          {/* ── Tour toggle ─────────────────────────────────── */}
-          <button
-            type="button"
-            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
-              touring
-                ? 'bg-cyan-100 text-cyan-600 animate-pulse'
-                : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
-            }`}
-            onClick={() => setTouring((prev) => !prev)}
-            title={touring ? 'Stop tour (T)' : 'Start tour (T)'}
-          >
-            {touring ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
-          </button>
-          <span className="h-3 w-px bg-slate-300/60" />
+              {/* ── Tour toggle ─────────────────────────────────── */}
+              <button
+                type="button"
+                className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
+                  touring
+                    ? 'bg-cyan-100 text-cyan-600 animate-pulse'
+                    : dark
+                      ? 'text-slate-400 hover:bg-slate-600/30 hover:text-cyan-400'
+                      : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                }`}
+                onClick={() => setTouring((prev) => !prev)}
+                title={touring ? 'Stop tour (T)' : 'Start tour (T)'}
+              >
+                {touring ? <Pause size={13} strokeWidth={1.8} /> : <Play size={13} strokeWidth={1.8} />}
+              </button>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
-          {/* ── Share URL ───────────────────────────────────── */}
-          <button
-            type="button"
-            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
-              copiedUrl ? 'bg-emerald-100 text-emerald-600' : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
-            }`}
-            onClick={handleCopyUrl}
-            title="Copy shareable URL"
-          >
-            <Share2 size={13} strokeWidth={1.8} />
-          </button>
-          {/* ── Export image ─────────────────────────────────── */}
-          <button
-            type="button"
-            className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
-              exporting
-                ? 'bg-cyan-100 text-cyan-600 animate-pulse'
-                : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
-            }`}
-            onClick={handleExportImage}
-            title="Export as PNG"
-            disabled={exporting}
-          >
-            <Camera size={13} strokeWidth={1.8} />
-          </button>
-          <span className="h-3 w-px bg-slate-300/60" />
+              {/* ── Share URL ───────────────────────────────────── */}
+              <button
+                type="button"
+                className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
+                  copiedUrl
+                    ? 'bg-emerald-100 text-emerald-600'
+                    : dark
+                      ? 'text-slate-400 hover:bg-slate-600/30 hover:text-cyan-400'
+                      : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                }`}
+                onClick={handleCopyUrl}
+                title="Copy shareable URL"
+              >
+                <Share2 size={13} strokeWidth={1.8} />
+              </button>
+              {/* ── Export image ─────────────────────────────────── */}
+              <button
+                type="button"
+                className={`inline-flex cursor-pointer items-center justify-center rounded p-1 outline-none transition-all focus:ring-2 focus:ring-cyan-400/25 active:scale-90 ${
+                  exporting
+                    ? 'bg-cyan-100 text-cyan-600 animate-pulse'
+                    : dark
+                      ? 'text-slate-400 hover:bg-slate-600/30 hover:text-cyan-400'
+                      : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                }`}
+                onClick={handleExportImage}
+                title="Export as PNG"
+                disabled={exporting}
+              >
+                <Camera size={13} strokeWidth={1.8} />
+              </button>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
 
-          {/* ── Attribution ─────────────────────────────────── */}
-          <span className="flex items-center gap-1.5">
-            <Layers size={12} strokeWidth={1.6} className="text-cyan-500" />
-            deck.gl
-          </span>
-          <span className="h-3 w-px bg-slate-300/60" />
-          <span className="flex items-center gap-1.5">
-            <Globe size={12} strokeWidth={1.6} className="text-cyan-500" />
-            {basemap === 'satellite' ? 'ESRI satellite' : basemap === 'dark' ? 'CARTO dark' : 'CARTO vector'}
-          </span>
-          <span className="h-3 w-px bg-slate-300/60" />
-          <span className="flex items-center gap-1.5">
-            <KeyRound size={12} strokeWidth={1.6} className="text-cyan-500" />
-            no API key
-          </span>
-          <span className="h-3 w-px bg-slate-300/60" />
-          <span className="tabular-nums">{buildings.length} buildings</span>
-          <span className="h-3 w-px bg-slate-300/60" />
-          <span className="inline-flex items-center gap-1.5">
-            <span
-              className={`inline-block h-1.5 w-1.5 rounded-full ${fetching ? 'animate-pulse bg-amber-400' : realBuildings.length > 0 ? 'bg-emerald-400' : 'bg-ember-400'}`}
-            />
-            {fetching ? 'fetching…' : realBuildings.length > 0 ? 'OSM live' : 'generated'}
-          </span>
-        </div>
-      </div>
+              {/* ── Attribution ─────────────────────────────────── */}
+              <span className="flex items-center gap-1.5">
+                <Layers size={12} strokeWidth={1.6} className="text-cyan-500" />
+                deck.gl
+              </span>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
+              <span className="flex items-center gap-1.5">
+                <Globe size={12} strokeWidth={1.6} className="text-cyan-500" />
+                {basemap === 'satellite' ? 'ESRI satellite' : basemap === 'dark' ? 'CARTO dark' : 'CARTO vector'}
+              </span>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
+              <span className="flex items-center gap-1.5">
+                <KeyRound size={12} strokeWidth={1.6} className="text-cyan-500" />
+                no API key
+              </span>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
+              <span className="tabular-nums">{buildings.length} buildings</span>
+              <span className={`h-3 w-px ${dark ? 'bg-slate-600/60' : 'bg-slate-300/60'}`} />
+              <span className="inline-flex items-center gap-1.5">
+                <span
+                  className={`inline-block h-1.5 w-1.5 rounded-full ${fetching ? 'animate-pulse bg-amber-400' : realBuildings.length > 0 ? 'bg-emerald-400' : 'bg-ember-400'}`}
+                />
+                {fetching ? 'fetching…' : realBuildings.length > 0 ? 'OSM live' : 'generated'}
+              </span>
+            </div>
+          </div>
+        )
+      })()}
     </main>
   )
 }

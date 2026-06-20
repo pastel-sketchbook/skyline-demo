@@ -63,6 +63,7 @@ interface CityPickerProps {
   defaultSeed: number
   showLabels: boolean
   onToggleLabels: () => void
+  dark: boolean
 }
 
 export default function CityPicker({
@@ -100,6 +101,7 @@ export default function CityPicker({
   defaultSeed,
   showLabels,
   onToggleLabels,
+  dark,
 }: CityPickerProps) {
   const pitchPct = (pitch / 75) * 100
   const bearingPct = ((bearing + 180) / 360) * 100
@@ -135,7 +137,7 @@ export default function CityPicker({
   )
 
   return (
-    <div className="panel-frost h-full w-64">
+    <div className={`${dark ? 'panel-frost-dark' : 'panel-frost'} h-full w-64`}>
       <div className="panel-scroll h-full space-y-3 overflow-y-auto p-4">
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="flex flex-col space-y-1.5">
@@ -145,7 +147,11 @@ export default function CityPicker({
               <Building2 size={15} strokeWidth={1.8} />
             </span>
             <div className="min-w-0 flex-1">
-              <h1 className="font-serif text-xl leading-snug font-bold text-slate-800 tracking-tight">{city.name}</h1>
+              <h1
+                className={`font-serif text-xl leading-snug font-bold tracking-tight ${dark ? 'text-white' : 'text-slate-800'}`}
+              >
+                {city.name}
+              </h1>
               <p className="mt-0.5 inline-flex items-center gap-1 font-mono text-[9px] tabular-nums text-cyan-600/80">
                 <MapPin size={9} strokeWidth={2} />
                 {Math.abs(city.center.lat).toFixed(3)}°{city.center.lat >= 0 ? 'N' : 'S'}{' '}
@@ -153,7 +159,9 @@ export default function CityPicker({
               </p>
             </div>
           </div>
-          <p className="font-sans text-[11px] leading-snug text-slate-600">{city.blurb}</p>
+          <p className={`font-sans text-[11px] leading-snug ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
+            {city.blurb}
+          </p>
           {tallestLandmark && (
             <p className="inline-flex w-fit items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-medium tracking-wide text-amber-700 uppercase ring-1 ring-amber-200/50">
               ★ {tallestLandmark.name} · {tallestLandmark.height} m
@@ -166,14 +174,20 @@ export default function CityPicker({
 
         {/* ── City selector ───────────────────────────────────── */}
         <label className="flex flex-col gap-1">
-          <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <Layers size={10} strokeWidth={1.8} />
             City
           </span>
           <div className="relative" ref={cityPickerRef}>
             <button
               type="button"
-              className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 text-sm text-slate-600 outline-none transition-all hover:border-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
+              className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 text-sm outline-none transition-all ${
+                dark
+                  ? 'border-slate-600 bg-slate-800/50 text-slate-200 hover:border-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
+                  : 'border-slate-300 bg-paper-50 text-slate-600 hover:border-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
+              }`}
               onClick={() => setCityPickerOpen((prev) => !prev)}
             >
               <span>{city.name}</span>
@@ -184,7 +198,11 @@ export default function CityPicker({
               />
             </button>
             {cityPickerOpen && (
-              <div className="absolute left-0 right-0 top-full z-30 mt-1 rounded-xl border border-slate-300 bg-white shadow-lg">
+              <div
+                className={`absolute left-0 right-0 top-full z-30 mt-1 rounded-xl border shadow-lg ${
+                  dark ? 'border-slate-600 bg-slate-800' : 'border-slate-300 bg-white'
+                }`}
+              >
                 <div className="relative">
                   <div
                     className="max-h-[420px] space-y-1 overflow-y-auto p-2"
@@ -192,16 +210,20 @@ export default function CityPicker({
                   >
                     {groupedCities.map(([country, cities]) => (
                       <div key={country} className="mb-1.5" style={{ breakInside: 'avoid' }}>
-                        <p className="mb-0.5 truncate rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[8px] font-bold tracking-[0.12em] text-slate-500 uppercase">
+                        <p
+                          className={`mb-0.5 truncate rounded px-1.5 py-0.5 font-mono text-[8px] font-bold tracking-[0.12em] uppercase ${
+                            dark ? 'bg-slate-700 text-slate-400' : 'bg-slate-100 text-slate-500'
+                          }`}
+                        >
                           {country}
                         </p>
                         {cities.map((option) => (
                           <button
                             key={option.id}
                             type="button"
-                            className={`block w-full cursor-pointer truncate rounded px-1.5 py-0.5 text-left text-[13px] font-semibold transition-all hover:bg-cyan-50 hover:text-cyan-700 ${
-                              option.id === city.id ? 'text-cyan-600' : 'text-slate-600'
-                            }`}
+                            className={`block w-full cursor-pointer truncate rounded px-1.5 py-0.5 text-left text-[13px] font-semibold transition-all ${
+                              dark ? 'hover:bg-slate-700 hover:text-cyan-400' : 'hover:bg-cyan-50 hover:text-cyan-700'
+                            } ${option.id === city.id ? 'text-cyan-600' : dark ? 'text-slate-300' : 'text-slate-600'}`}
                             onClick={() => {
                               onSelectCity(option.id)
                               setCityPickerOpen(false)
@@ -213,7 +235,11 @@ export default function CityPicker({
                       </div>
                     ))}
                   </div>
-                  <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-col items-center rounded-b-xl bg-gradient-to-t from-white via-white/90 to-transparent pb-0.5 pt-6">
+                  <div
+                    className={`pointer-events-none absolute bottom-0 left-0 right-0 flex flex-col items-center rounded-b-xl bg-gradient-to-t pb-0.5 pt-6 ${
+                      dark ? 'from-slate-800 via-slate-800/90 to-transparent' : 'from-white via-white/90 to-transparent'
+                    }`}
+                  >
                     <ChevronDown size={12} strokeWidth={2} className="text-slate-300" />
                   </div>
                 </div>
@@ -227,11 +253,15 @@ export default function CityPicker({
 
         {/* ── Basemap segmented control ─────────────────────────── */}
         <div className="flex flex-col gap-1">
-          <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <MapIcon size={10} strokeWidth={1.8} />
             Basemap
           </span>
-          <div className="flex rounded-lg border border-slate-300 bg-paper-50 p-0.5">
+          <div
+            className={`flex rounded-lg border p-0.5 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+          >
             {(['satellite', 'vector', 'dark'] as const).map((mode) => (
               <button
                 key={mode}
@@ -239,7 +269,9 @@ export default function CityPicker({
                 className={`flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-md py-1 text-xs font-medium transition-all ${
                   basemap === mode
                     ? 'bg-gradient-to-b from-cyan-400 to-cyan-500 text-white shadow-sm shadow-cyan-500/25'
-                    : 'text-slate-500 hover:bg-slate-300/20'
+                    : dark
+                      ? 'text-slate-400 hover:bg-slate-700/50'
+                      : 'text-slate-500 hover:bg-slate-300/20'
                 }`}
                 onClick={() => onBasemapChange(mode)}
               >
@@ -256,14 +288,22 @@ export default function CityPicker({
 
         {/* ── Colors ──────────────────────────────────────────────── */}
         <div className="flex flex-col gap-1">
-          <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <Eye size={10} strokeWidth={1.8} />
             Colors
           </span>
-          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2.5 space-y-2.5">
+          <div
+            className={`rounded-lg border p-2.5 space-y-2.5 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+          >
             {/* Building palette */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Palette</span>
+              <span
+                className={`text-[9px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+              >
+                Palette
+              </span>
               <div className="flex gap-1.5">
                 {(['default', 'night', 'mono'] as const).map((p) => (
                   <button
@@ -272,7 +312,9 @@ export default function CityPicker({
                     className={`group flex flex-1 cursor-pointer items-center gap-1.5 rounded-md px-2 py-1.5 text-left transition-all ${
                       palette === p
                         ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
-                        : 'hover:bg-slate-300/20'
+                        : dark
+                          ? 'hover:bg-slate-700/50'
+                          : 'hover:bg-slate-300/20'
                     }`}
                     onClick={() => onPaletteChange(p)}
                   >
@@ -282,7 +324,9 @@ export default function CityPicker({
                         background: `linear-gradient(to right, ${BUILDING_PALETTES[p].map(([, , c]) => `rgb(${c[0]},${c[1]},${c[2]})`).join(',')})`,
                       }}
                     />
-                    <span className={`text-[10px] font-medium ${palette === p ? 'text-cyan-700' : 'text-slate-500'}`}>
+                    <span
+                      className={`text-[10px] font-medium ${palette === p ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
+                    >
                       {p === 'default' ? 'Teal' : p === 'night' ? 'Night' : 'Mono'}
                     </span>
                   </button>
@@ -292,7 +336,11 @@ export default function CityPicker({
 
             {/* Tint */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Tint</span>
+              <span
+                className={`text-[9px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+              >
+                Tint
+              </span>
               <div className="grid grid-cols-2 gap-1.5">
                 {(
                   [
@@ -308,12 +356,16 @@ export default function CityPicker({
                     className={`group flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 transition-all ${
                       tint === t.id
                         ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
-                        : 'hover:bg-slate-300/20'
+                        : dark
+                          ? 'hover:bg-slate-700/50'
+                          : 'hover:bg-slate-300/20'
                     }`}
                     onClick={() => onTintChange(t.id)}
                   >
                     <span className={`h-3 w-3 shrink-0 rounded-full ring-1 ring-black/10 ${t.color}`} />
-                    <span className={`text-[10px] font-medium ${tint === t.id ? 'text-cyan-700' : 'text-slate-500'}`}>
+                    <span
+                      className={`text-[10px] font-medium ${tint === t.id ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
+                    >
                       {t.label}
                     </span>
                   </button>
@@ -323,7 +375,11 @@ export default function CityPicker({
 
             {/* Map background */}
             <div className="flex flex-col gap-1">
-              <span className="text-[9px] font-medium tracking-wide text-slate-400 uppercase">Background</span>
+              <span
+                className={`text-[9px] font-medium tracking-wide uppercase ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+              >
+                Background
+              </span>
               <div className="flex gap-1.5">
                 {(
                   [
@@ -338,13 +394,15 @@ export default function CityPicker({
                     className={`group flex flex-1 cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 transition-all ${
                       mapBgColor === bg.id
                         ? 'bg-cyan-50 ring-1 ring-cyan-300 shadow-sm shadow-cyan-500/10'
-                        : 'hover:bg-slate-300/20'
+                        : dark
+                          ? 'hover:bg-slate-700/50'
+                          : 'hover:bg-slate-300/20'
                     }`}
                     onClick={() => onMapBgColorChange(bg.id)}
                   >
                     <span className={`h-3 w-3 shrink-0 rounded-sm ring-1 ring-black/10 ${bg.swatch}`} />
                     <span
-                      className={`text-[10px] font-medium ${mapBgColor === bg.id ? 'text-cyan-700' : 'text-slate-500'}`}
+                      className={`text-[10px] font-medium ${mapBgColor === bg.id ? 'text-cyan-700' : dark ? 'text-slate-400' : 'text-slate-500'}`}
                     >
                       {bg.label}
                     </span>
@@ -358,12 +416,16 @@ export default function CityPicker({
         {/* ── Skyline toggle ────────────────────────────────────── */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 transition-all hover:border-slate-400 hover:bg-slate-300/15"
+          className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 transition-all ${
+            dark
+              ? 'border-slate-600 bg-slate-800/50 hover:border-slate-500 hover:bg-slate-700/50'
+              : 'border-slate-300 bg-paper-50 hover:border-slate-400 hover:bg-slate-300/15'
+          }`}
           onClick={onToggleSkyline}
         >
           <span className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <Building2 size={13} strokeWidth={1.8} className={showSkyline ? 'text-cyan-600' : 'text-slate-400'} />
-            Skyline
+            <span className={dark ? 'text-slate-300' : 'text-slate-600'}>Skyline</span>
           </span>
           <span
             className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
@@ -381,12 +443,16 @@ export default function CityPicker({
         {/* ── Labels toggle ────────────────────────────────────── */}
         <button
           type="button"
-          className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 transition-all hover:border-slate-400 hover:bg-slate-300/15"
+          className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 transition-all ${
+            dark
+              ? 'border-slate-600 bg-slate-800/50 hover:border-slate-500 hover:bg-slate-700/50'
+              : 'border-slate-300 bg-paper-50 hover:border-slate-400 hover:bg-slate-300/15'
+          }`}
           onClick={onToggleLabels}
         >
           <span className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
             <Tag size={13} strokeWidth={1.8} className={showLabels ? 'text-cyan-600' : 'text-slate-400'} />
-            Labels
+            <span className={dark ? 'text-slate-300' : 'text-slate-600'}>Labels</span>
           </span>
           <span
             className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
@@ -406,7 +472,9 @@ export default function CityPicker({
 
         {/* ── Pitch slider ────────────────────────────────────── */}
         <label className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <span className="flex items-center gap-1">
               <Eye size={10} strokeWidth={1.8} />
               Pitch
@@ -427,7 +495,9 @@ export default function CityPicker({
 
         {/* ── Bearing slider ──────────────────────────────────── */}
         <label className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <span className="flex items-center gap-1">
               <Compass size={10} strokeWidth={1.8} />
               Bearing
@@ -451,7 +521,9 @@ export default function CityPicker({
               className={`inline-flex cursor-pointer items-center justify-center rounded-lg p-1.5 transition-all ${
                 orbiting
                   ? 'bg-cyan-100 text-cyan-600 animate-spin'
-                  : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                  : dark
+                    ? 'text-slate-400 hover:bg-slate-700/50 hover:text-cyan-400'
+                    : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
               }`}
               onClick={onOrbit}
               title="Orbit 360°"
@@ -466,7 +538,9 @@ export default function CityPicker({
 
         {/* ── Height exaggeration ─────────────────────────────── */}
         <label className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <span className="flex items-center gap-1">
               <Building2 size={10} strokeWidth={1.8} />
               Exaggeration
@@ -489,7 +563,9 @@ export default function CityPicker({
 
         {/* ── Sun position ───────────────────────────────────── */}
         <div className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <span className="flex items-center gap-1">
               <Sun size={10} strokeWidth={1.8} />
               Sun
@@ -498,10 +574,14 @@ export default function CityPicker({
               {String(Math.floor(sunPosition)).padStart(2, '0')}:{sunPosition % 1 === 0 ? '00' : '30'}
             </span>
           </span>
-          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2.5 space-y-2">
+          <div
+            className={`rounded-lg border p-2.5 space-y-2 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+          >
             {/* Time context label */}
             <div className="flex items-center justify-between px-0.5">
-              <span className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
+              <span
+                className={`flex items-center gap-1 text-[9px] font-medium ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+              >
                 <SunDim size={9} strokeWidth={2} className="text-amber-400" />
                 {sunPosition < 5
                   ? 'Night'
@@ -517,7 +597,9 @@ export default function CityPicker({
                             ? 'Dusk'
                             : 'Night'}
               </span>
-              <span className="flex items-center gap-1 text-[9px] font-medium text-slate-400">
+              <span
+                className={`flex items-center gap-1 text-[9px] font-medium ${dark ? 'text-slate-400' : 'text-slate-400'}`}
+              >
                 {sunPosition < 6 || sunPosition >= 18 ? (
                   <>
                     <Moon size={9} strokeWidth={2} className="text-indigo-400" />
@@ -543,7 +625,9 @@ export default function CityPicker({
               onChange={(event) => onSunPositionChange(Number(event.target.value))}
             />
             {/* Time tick marks */}
-            <div className="flex justify-between px-0.5 font-mono text-[8px] tabular-nums text-slate-300">
+            <div
+              className={`flex justify-between px-0.5 font-mono text-[8px] tabular-nums ${dark ? 'text-slate-500' : 'text-slate-300'}`}
+            >
               <span>00</span>
               <span>06</span>
               <span>12</span>
@@ -558,7 +642,9 @@ export default function CityPicker({
 
         {/* ── Seed ────────────────────────────────────────────── */}
         <label className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <span className="flex items-center gap-1">
               <Dice5 size={10} strokeWidth={1.8} />
               Seed
@@ -581,7 +667,11 @@ export default function CityPicker({
             {seedOverride !== null && seedOverride !== defaultSeed && (
               <button
                 type="button"
-                className="inline-flex cursor-pointer items-center justify-center rounded p-1 text-slate-400 transition-all hover:bg-slate-300/20 hover:text-cyan-600"
+                className={`inline-flex cursor-pointer items-center justify-center rounded p-1 transition-all ${
+                  dark
+                    ? 'text-slate-400 hover:bg-slate-700/50 hover:text-cyan-400'
+                    : 'text-slate-400 hover:bg-slate-300/20 hover:text-cyan-600'
+                }`}
                 onClick={() => onSeedOverrideChange(null)}
                 title="Reset to default seed"
               >
@@ -596,11 +686,15 @@ export default function CityPicker({
 
         {/* ── Height legend ───────────────────────────────────── */}
         <div className="flex flex-col gap-1">
-          <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <Building2 size={10} strokeWidth={1.8} />
             Height bands
           </span>
-          <div className="rounded-lg border border-slate-300 bg-paper-50 p-2.5 space-y-2">
+          <div
+            className={`rounded-lg border p-2.5 space-y-2 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+          >
             {/* Gradient bar with tick marks */}
             <div className="relative">
               <div
@@ -624,7 +718,7 @@ export default function CityPicker({
                     className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
                     style={{ backgroundColor: `rgb(${r},${g},${b})` }}
                   />
-                  <span className="text-slate-400 truncate">
+                  <span className={`${dark ? 'text-slate-400' : 'text-slate-400'} truncate`}>
                     {lo}–{hi === Infinity ? '∞' : hi}
                   </span>
                 </span>
@@ -638,7 +732,9 @@ export default function CityPicker({
 
         {/* ── Search ──────────────────────────────────────────── */}
         <label className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+          <span
+            className={`flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] ${dark ? 'text-slate-400' : 'text-slate-400'} uppercase`}
+          >
             <span className="flex items-center gap-1">
               <Search size={10} strokeWidth={1.8} />
               Search
@@ -651,7 +747,11 @@ export default function CityPicker({
           </span>
           <input
             type="text"
-            className="w-full rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 text-sm text-slate-600 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
+            className={`w-full rounded-lg border px-2.5 py-1.5 text-sm outline-none transition-all focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25 ${
+              dark
+                ? 'border-slate-600 bg-slate-800/50 text-slate-200 placeholder:text-slate-500'
+                : 'border-slate-300 bg-paper-50 text-slate-600 placeholder:text-slate-400'
+            }`}
             placeholder="Name, height (>100, <200, 50-150)"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -660,16 +760,22 @@ export default function CityPicker({
 
         {/* ── Footer ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] tabular-nums text-slate-500">
-            <span className="flex h-2 w-9 overflow-hidden rounded-full bg-slate-300/50">
+          <span
+            className={`inline-flex items-center gap-2 font-mono text-[11px] tabular-nums ${dark ? 'text-slate-400' : 'text-slate-500'}`}
+          >
+            <span
+              className={`flex h-2 w-9 overflow-hidden rounded-full ${dark ? 'bg-slate-600/50' : 'bg-slate-300/50'}`}
+            >
               <span
                 className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-cyan-500 transition-all duration-700 ease-out"
                 style={{ width: `${Math.min(100, Math.round((searchQuery ? filteredCount : buildingCount) / 5))}%` }}
               />
             </span>
             <span className="inline-flex items-baseline gap-1">
-              <span className="font-medium text-slate-600">{searchQuery ? filteredCount : buildingCount}</span>
-              <span className="text-[9px] tracking-wide text-slate-400 uppercase">
+              <span className={`font-medium ${dark ? 'text-slate-300' : 'text-slate-600'}`}>
+                {searchQuery ? filteredCount : buildingCount}
+              </span>
+              <span className={`text-[9px] tracking-wide uppercase ${dark ? 'text-slate-500' : 'text-slate-400'}`}>
                 {searchQuery ? `of ${totalCount}` : ''} buildings
               </span>
               <span className="ml-0.5 inline-block h-1.5 w-1.5 animate-pulse-dot self-center rounded-full bg-cyan-400" />
@@ -677,7 +783,9 @@ export default function CityPicker({
           </span>
           <button
             type="button"
-            className="inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-cyan-600 transition-all hover:bg-cyan-100 hover:text-cyan-700 active:scale-95"
+            className={`inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium text-cyan-600 transition-all active:scale-95 ${
+              dark ? 'hover:bg-slate-700/50 hover:text-cyan-400' : 'hover:bg-cyan-100 hover:text-cyan-700'
+            }`}
             onClick={onReset}
           >
             <RotateCcw size={12} strokeWidth={1.8} />
@@ -686,7 +794,9 @@ export default function CityPicker({
         </div>
 
         {/* ── Attribution ────────────────────────────────────── */}
-        <div className="pt-2 text-center font-mono text-[9px] tracking-wide text-slate-500 uppercase">
+        <div
+          className={`pt-2 text-center font-mono text-[9px] tracking-wide uppercase ${dark ? 'text-slate-500' : 'text-slate-500'}`}
+        >
           Presented by Pastel Project
         </div>
       </div>
