@@ -1,65 +1,83 @@
 # Skyline Demo
 
-A small [deck.gl](https://deck.gl) demo that renders **3D city skylines**
-(for example, **Seoul**, **New York**, **Dubai**) in the browser — with
-**no API key required**.
+A **deck.gl** city-skyline visualizer that renders 3D buildings over a
+free basemap — no API key required.
 
-Extruded buildings are drawn with a deck.gl `PolygonLayer` over a free
-MapLibre basemap (ESRI satellite or CARTO vector, toggleable). On app
-load, the demo fetches **real building footprints from OpenStreetMap**
-via the Overpass API. If Overpass is unreachable, it falls back to a
-deterministic generated skyline — the scene always renders.
+Pick a city, orbit the skyline, and watch real OpenStreetMap footprints
+replace generated filler in real time. Buildings are colored by height
+band (teal → brick) and extruded in meters.
 
-Buildings are colored by height band (6 discrete bands from teal →
-brick) so skyline structure is readable at a glance. Hover any building
-to see its height and name; toggle the skyline on/off with the **Skyline**
-button in the control panel.
+## Cities
+
+35+ cities: Seoul, New York, Dubai, Tokyo, Shanghai, Hong Kong, Chicago,
+Houston, London, Paris, Singapore, Kuala Lumpur, Bangkok, Mumbai,
+Sydney, Melbourne, Toronto, Vancouver, Sao Paulo, Mexico City, Buenos
+Aires, Berlin, Madrid, Moscow, Istanbul, Taipei, Jakarta, Manila,
+Kuwait City, Doha, Riyadh, Abu Dhabi, San Francisco, Los Angeles,
+Miami, Seattle.
+
+Adding a new city is one typed entry in
+[`src/data/cities.ts`](src/data/cities.ts).
 
 ## Stack
 
-- React 19 + TypeScript + Vite
-- deck.gl 9 (`@deck.gl/react`, `@deck.gl/layers`)
-- MapLibre GL via `react-map-gl/maplibre` (ESRI satellite or CARTO vector, no key)
-- Tailwind CSS 4 + daisyUI 5
-- Biome (lint + format), Vitest (unit tests)
-- **bun** as package manager + task runner
+| Layer | Tool |
+|---|---|
+| UI | React 19 |
+| 3D rendering | deck.gl 9 (`PolygonLayer`, extruded) |
+| Basemap | MapLibre GL — ESRI satellite, CARTO vector, or CARTO dark |
+| Styling | Tailwind CSS 4 + daisyUI 5 |
+| Build | Vite 8 |
+| Lint/format | Biome |
+| Test | Vitest + happy-dom |
+| Package manager | **bun** |
 
 ## Getting started
 
 ```bash
 bun install
-bun run dev        # or: task web:dev
+bun run dev          # or: task web:dev
 ```
 
-Open the printed local URL. Switch cities and drag/scroll to orbit the
-skyline; use the pitch / bearing sliders to frame the shot. Toggle
-between Photo (satellite) and Map (vector) basemap.
+Open the printed local URL. Switch cities, drag/scroll to orbit, and
+use the pitch/bearing sliders to frame the shot. Toggle between Photo
+(satellite), Map (vector), and Dark basemaps.
 
-## Common tasks
+## Tasks
 
 ```bash
-task web:dev       # Vite dev server
-task web:build     # production build
-task test          # Vitest
-task check:all     # Biome + Vitest + type-check + build
+task web:dev         # Vite dev server
+task web:build       # production build
+task test            # Vitest once
+task test:watch      # Vitest in watch mode
+task check:all       # Biome + Vitest + type-check + build
+task build:data      # Fetch real OSM building data
+task gen:mp4         # Capture orbit as mp4 (dev server must be running)
 ```
 
-(Or run the underlying `bun run <script>` directly.)
+Or run the underlying `bun run <script>` directly (see `package.json`).
 
 ## How it works
 
-1. Pick a city from [`src/data/cities.ts`](src/data/cities.ts)
-   (center + camera + landmark buildings).
-2. On city select, kick off a runtime Overpass fetch for real building
-   footprints with height data ([`src/lib/overpass.ts`](src/lib/overpass.ts)).
-   While fetching, render deterministic generated filler as a placeholder.
-3. When real data arrives, swap filler for real OSM buildings. Footprint
-   sizes are deterministic (derived from OSM element IDs).
-4. As you pan the map, new areas are fetched and accumulated (400 m
-   haversine threshold, deduplicated by OSM ID). Tiled cache avoids
-   re-fetching visited areas.
-5. Assign each building its height-band color and extrude it in meters.
-6. Render with deck.gl over a MapLibre basemap
+1. A city is selected from [`src/data/cities.ts`](src/data/cities.ts)
+   — center, camera, seed, and hand-curated landmarks.
+2. On load the app fetches **real building footprints** from OpenStreetMap
+   via the Overpass API ([`src/lib/overpass.ts`](src/lib/overpass.ts)).
+   While fetching, deterministic generated filler renders immediately.
+3. When real data arrives, filler is replaced by OSM buildings. Footprint
+   sizes are derived deterministically from OSM element IDs.
+4. As you pan, new viewport areas are fetched and accumulated (400 m
+   haversine threshold, deduped by OSM ID). A tile-keyed cache (zoom 14,
+   1 h TTL) avoids re-fetching.
+5. Each building is colored by height band and extruded in meters via an
+   extruded deck.gl `PolygonLayer` over a MapLibre basemap
    ([`src/components/SkylineDeck.tsx`](src/components/SkylineDeck.tsx)).
 
-Adding a new city is one typed entry in `src/data/cities.ts`.
+## Design rationale
+
+See [`docs/rationale/`](docs/rationale/) for architectural decisions
+and trade-offs.
+
+## License
+
+[MIT](LICENSE) — see [LICENSE](LICENSE) for full text.
