@@ -137,7 +137,7 @@ export default function CityPicker({
   )
 
   return (
-    <div className={`${dark ? 'panel-frost-dark' : 'panel-frost'} h-full w-[27rem]`}>
+    <div className={`${dark ? 'panel-frost-dark' : 'panel-frost'} h-full w-[22rem]`}>
       <div className="panel-scroll h-full space-y-3 overflow-y-auto p-4">
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="flex flex-col space-y-1.5">
