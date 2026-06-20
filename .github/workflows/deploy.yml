@@ -28,7 +28,7 @@ jobs:
         run: bun run check:all
 
       - name: Build
-        run: bun run web:build
+        run: bun run build:data && bun run build
 
       - uses: actions/upload-pages-artifact@v3
         with:
