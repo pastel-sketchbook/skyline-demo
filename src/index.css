@@ -394,7 +394,9 @@ input[type="range"].range-sun::-moz-range-thumb {
 }
 
 .panel-frost-dark input[type="range"].range-sm::-webkit-slider-thumb {
-  border-color: rgba(15, 23, 42, 0.8);
+  background: linear-gradient(135deg, var(--color-cyan-300), var(--color-cyan-500));
+  border-color: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 6px rgba(34, 211, 238, 0.4);
 }
 
 .panel-frost-dark input[type="range"].range-sm::-moz-range-track {
@@ -402,7 +404,22 @@ input[type="range"].range-sun::-moz-range-thumb {
 }
 
 .panel-frost-dark input[type="range"].range-sm::-moz-range-thumb {
-  border-color: rgba(15, 23, 42, 0.8);
+  background: linear-gradient(135deg, var(--color-cyan-300), var(--color-cyan-500));
+  border-color: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 6px rgba(34, 211, 238, 0.4);
+}
+
+/* Sun slider keeps amber thumb in dark mode */
+.panel-frost-dark input[type="range"].range-sun::-webkit-slider-thumb {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border-color: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+}
+
+.panel-frost-dark input[type="range"].range-sun::-moz-range-thumb {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border-color: rgba(15, 23, 42, 0.6);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
 }
 
 .panel-frost-dark .divider-subtle {
