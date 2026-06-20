@@ -372,7 +372,7 @@ input[type="range"].range-sun::-moz-range-thumb {
 .panel-frost-dark input[type="range"].range-sm {
   background:
     linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-500)) no-repeat,
-    linear-gradient(to right, #334155, #1e293b);
+    linear-gradient(to right, #475569, #334155);
 }
 
 .panel-frost-dark input[type="range"].range-sm::-webkit-slider-thumb {
@@ -380,7 +380,7 @@ input[type="range"].range-sun::-moz-range-thumb {
 }
 
 .panel-frost-dark input[type="range"].range-sm::-moz-range-track {
-  background: linear-gradient(to right, #334155, #1e293b);
+  background: linear-gradient(to right, #475569, #334155);
 }
 
 .panel-frost-dark input[type="range"].range-sm::-moz-range-thumb {
