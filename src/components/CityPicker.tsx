@@ -225,31 +225,6 @@ export default function CityPicker({
         {/* ── Divider ─────────────────────────────────────────── */}
         <div className="divider-subtle" />
 
-        {/* ── Search ──────────────────────────────────────────── */}
-        <label className="flex flex-col gap-1">
-          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
-            <span className="flex items-center gap-1">
-              <Search size={10} strokeWidth={1.8} />
-              Search
-            </span>
-            {searchQuery && (
-              <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
-                {filteredCount}/{totalCount}
-              </span>
-            )}
-          </span>
-          <input
-            type="text"
-            className="w-full rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 text-sm text-slate-600 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
-            placeholder="Name, height (>100, <200, 50-150)"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
-        </label>
-
-        {/* ── Divider ─────────────────────────────────────────── */}
-        <div className="divider-subtle" />
-
         {/* ── Basemap segmented control ─────────────────────────── */}
         <div className="flex flex-col gap-1">
           <span className="flex items-center gap-1 font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
@@ -660,6 +635,28 @@ export default function CityPicker({
 
         {/* ── Divider ─────────────────────────────────────────── */}
         <div className="divider-subtle" />
+
+        {/* ── Search ──────────────────────────────────────────── */}
+        <label className="flex flex-col gap-1">
+          <span className="flex items-center justify-between font-mono text-[9px] font-medium tracking-[0.15em] text-slate-400 uppercase">
+            <span className="flex items-center gap-1">
+              <Search size={10} strokeWidth={1.8} />
+              Search
+            </span>
+            {searchQuery && (
+              <span className="font-sans text-[11px] font-medium tabular-nums text-cyan-600">
+                {filteredCount}/{totalCount}
+              </span>
+            )}
+          </span>
+          <input
+            type="text"
+            className="w-full rounded-lg border border-slate-300 bg-paper-50 px-2.5 py-1.5 text-sm text-slate-600 outline-none transition-all placeholder:text-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25"
+            placeholder="Name, height (>100, <200, 50-150)"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </label>
 
         {/* ── Footer ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between">
