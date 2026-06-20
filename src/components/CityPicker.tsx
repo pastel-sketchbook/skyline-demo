@@ -483,7 +483,7 @@ export default function CityPicker({
           </span>
           <input
             type="range"
-            className="range-sm"
+            className="range-sm w-full"
             style={{ '--fill': `${pitchPct}%` } as CSSProperties}
             min={0}
             max={75}
@@ -551,7 +551,7 @@ export default function CityPicker({
           </span>
           <input
             type="range"
-            className="range-sm"
+            className="range-sm w-full"
             style={{ '--fill': `${exhPct}%` } as CSSProperties}
             min={100}
             max={300}
@@ -616,7 +616,7 @@ export default function CityPicker({
             {/* Slider with day/night gradient track */}
             <input
               type="range"
-              className="range-sm range-sun"
+              className="range-sm range-sun w-full"
               style={{ '--fill': `${sunPct}%` } as CSSProperties}
               min={0}
               max={24}
