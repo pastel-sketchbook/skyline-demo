@@ -3,7 +3,7 @@ import { PolygonLayer, TextLayer } from '@deck.gl/layers'
 import { DeckGL } from '@deck.gl/react'
 import type { StyleSpecification } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Map as MapLibreMap } from 'react-map-gl/maplibre'
 
 import type { BasemapMode, PaletteName, SkylineBuilding } from '@/lib/skyline'
@@ -107,7 +107,7 @@ export default function SkylineDeck({
   const bands = BUILDING_PALETTES[palette]
 
   // Calculate lighting from sun position (0-24 hours)
-  const material = useMemo(() => {
+  const { material, colorDim } = useMemo(() => {
     // Sun angle: 0h = midnight (no light), 6h = dawn, 12h = noon, 18h = dusk
     const sunAngle = ((sunPosition - 6) / 12) * Math.PI
     const sunAltitude = Math.sin(sunAngle)
@@ -118,17 +118,30 @@ export default function SkylineDeck({
     // Diffuse: peaks at dawn/dusk for dramatic lighting, lower at noon
     const diffuse = sunAltitude > 0 ? 0.5 + 0.3 * Math.abs(sunHorizon) : 0.2
 
+    // Color dimming: scales fill/line colors to match the lighting model.
+    // Noon → 1.0, dawn/dusk → 0.5, midnight → 0.25
+    const colorDim = Math.max(0.25, (sunAltitude + 1) / 2)
+
     return {
-      ambient,
-      diffuse,
-      shininess: 32,
-      specularColor: [80 * (1 + sunHorizon * 0.3), 80 * (1 + sunHorizon * 0.3), 80 * (1 + sunHorizon * 0.3)] as [
-        number,
-        number,
-        number,
-      ],
+      material: {
+        ambient,
+        diffuse,
+        shininess: 32,
+        specularColor: [80 * (1 + sunHorizon * 0.3), 80 * (1 + sunHorizon * 0.3), 80 * (1 + sunHorizon * 0.3)] as [
+          number,
+          number,
+          number,
+        ],
+      },
+      colorDim,
     }
   }, [sunPosition])
+
+  const dimColor = useCallback(
+    ([r, g, b]: [number, number, number]) =>
+      [Math.round(r * colorDim), Math.round(g * colorDim), Math.round(b * colorDim)] as [number, number, number],
+    [colorDim],
+  )
 
   const layers = useMemo(
     () => [
@@ -144,10 +157,13 @@ export default function SkylineDeck({
         getPolygon: (d) => d.footprint,
         getElevation: (d) => d.height * heightExaggeration,
         getFillColor: (d) => {
-          const [r, g, b] = heightToColorFromBands(d.height, bands)
-          return [r, g, b, d.landmark ? 255 : 220]
+          const base = heightToColorFromBands(d.height, bands)
+          return [...dimColor(base), d.landmark ? 255 : 220]
         },
-        getLineColor: (d) => (d.landmark ? [120, 130, 130, 200] : [40, 40, 40, 180]),
+        getLineColor: (d) => {
+          const base: [number, number, number] = d.landmark ? [120, 130, 130] : [40, 40, 40]
+          return [...dimColor(base), d.landmark ? 200 : 180]
+        },
         material,
         onClick: (info) => {
           if (info.object) onBuildingClick(info.object)
@@ -161,19 +177,19 @@ export default function SkylineDeck({
               getPosition: (d) => [d.lng, d.lat],
               getText: (d) => d.name,
               getSize: 10,
-              getColor: [255, 255, 255, 220],
+              getColor: [...dimColor([255, 255, 255]), 220],
               getTextAnchor: 'middle',
               getAlignmentBaseline: 'bottom',
               billboard: true,
               fontFamily: 'Space Grotesk, sans-serif',
               fontWeight: 600,
               outlineWidth: 2,
-              outlineColor: [40, 40, 40, 180],
+              outlineColor: [...dimColor([40, 40, 40]), 180],
             }),
           ]
         : []),
     ],
-    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick, material, showLabels],
+    [buildings, showSkyline, heightExaggeration, bands, onBuildingClick, material, dimColor, showLabels],
   )
 
   return (
