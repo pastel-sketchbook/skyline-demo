@@ -87,6 +87,12 @@ tasks:
     cmds:
       - bun run scripts/capture-orbit.ts --gif
 
+  # --- Deploy ---
+  deploy:gh:
+    desc: "Build for GitHub Pages deployment (CI handles the actual deploy)"
+    cmds:
+      - bun run check:all && bun run web:build
+
   # --- Housekeeping ---
   clean:
     desc: "Remove build artifacts and coverage"
