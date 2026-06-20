@@ -163,7 +163,7 @@ body {
 .panel-frost-dark {
   position: relative;
   overflow: hidden;
-  background: rgba(15, 23, 42, 0.78);
+  background: rgba(15, 23, 42, 0.82);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(71, 85, 105, 0.5);
   border-right: 0;
@@ -366,4 +366,34 @@ input[type="range"].range-sun::-webkit-slider-thumb {
 
 input[type="range"].range-sun::-moz-range-thumb {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
+
+/* ── Dark-mode descendant overrides ──────────────────────────────── */
+.panel-frost-dark input[type="range"].range-sm {
+  background:
+    linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-500)) no-repeat,
+    linear-gradient(to right, #334155, #1e293b);
+}
+
+.panel-frost-dark input[type="range"].range-sm::-webkit-slider-thumb {
+  border-color: rgba(15, 23, 42, 0.8);
+}
+
+.panel-frost-dark input[type="range"].range-sm::-moz-range-track {
+  background: linear-gradient(to right, #334155, #1e293b);
+}
+
+.panel-frost-dark input[type="range"].range-sm::-moz-range-thumb {
+  border-color: rgba(15, 23, 42, 0.8);
+}
+
+.panel-frost-dark .divider-subtle {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(100, 116, 139, 0.4) 15%,
+    rgba(100, 116, 139, 0.4) 85%,
+    transparent 100%
+  );
+  opacity: 0.7;
 }

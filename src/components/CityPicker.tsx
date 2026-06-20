@@ -185,7 +185,7 @@ export default function CityPicker({
               type="button"
               className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 text-sm outline-none transition-all ${
                 dark
-                  ? 'border-slate-600 bg-slate-800/50 text-slate-200 hover:border-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
+                  ? 'border-slate-600 bg-slate-800/70 text-slate-200 hover:border-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
                   : 'border-slate-300 bg-paper-50 text-slate-600 hover:border-slate-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25'
               }`}
               onClick={() => setCityPickerOpen((prev) => !prev)}
@@ -260,7 +260,7 @@ export default function CityPicker({
             Basemap
           </span>
           <div
-            className={`flex rounded-lg border p-0.5 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+            className={`flex rounded-lg border p-0.5 ${dark ? 'border-slate-600 bg-slate-800/70' : 'border-slate-300 bg-paper-50'}`}
           >
             {(['satellite', 'vector', 'dark'] as const).map((mode) => (
               <button
@@ -295,7 +295,7 @@ export default function CityPicker({
             Colors
           </span>
           <div
-            className={`rounded-lg border p-2.5 space-y-2.5 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+            className={`rounded-lg border p-2.5 space-y-2.5 ${dark ? 'border-slate-600 bg-slate-800/70' : 'border-slate-300 bg-paper-50'}`}
           >
             {/* Building palette */}
             <div className="flex flex-col gap-1">
@@ -418,7 +418,7 @@ export default function CityPicker({
           type="button"
           className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 transition-all ${
             dark
-              ? 'border-slate-600 bg-slate-800/50 hover:border-slate-500 hover:bg-slate-700/50'
+              ? 'border-slate-600 bg-slate-800/70 hover:border-slate-500 hover:bg-slate-700/50'
               : 'border-slate-300 bg-paper-50 hover:border-slate-400 hover:bg-slate-300/15'
           }`}
           onClick={onToggleSkyline}
@@ -445,7 +445,7 @@ export default function CityPicker({
           type="button"
           className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-2.5 py-1.5 transition-all ${
             dark
-              ? 'border-slate-600 bg-slate-800/50 hover:border-slate-500 hover:bg-slate-700/50'
+              ? 'border-slate-600 bg-slate-800/70 hover:border-slate-500 hover:bg-slate-700/50'
               : 'border-slate-300 bg-paper-50 hover:border-slate-400 hover:bg-slate-300/15'
           }`}
           onClick={onToggleLabels}
@@ -575,7 +575,7 @@ export default function CityPicker({
             </span>
           </span>
           <div
-            className={`rounded-lg border p-2.5 space-y-2 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+            className={`rounded-lg border p-2.5 space-y-2 ${dark ? 'border-slate-600 bg-slate-800/70' : 'border-slate-300 bg-paper-50'}`}
           >
             {/* Time context label */}
             <div className="flex items-center justify-between px-0.5">
@@ -693,7 +693,7 @@ export default function CityPicker({
             Height bands
           </span>
           <div
-            className={`rounded-lg border p-2.5 space-y-2 ${dark ? 'border-slate-600 bg-slate-800/50' : 'border-slate-300 bg-paper-50'}`}
+            className={`rounded-lg border p-2.5 space-y-2 ${dark ? 'border-slate-600 bg-slate-800/70' : 'border-slate-300 bg-paper-50'}`}
           >
             {/* Gradient bar with tick marks */}
             <div className="relative">
@@ -749,7 +749,7 @@ export default function CityPicker({
             type="text"
             className={`w-full rounded-lg border px-2.5 py-1.5 text-sm outline-none transition-all focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/25 ${
               dark
-                ? 'border-slate-600 bg-slate-800/50 text-slate-200 placeholder:text-slate-500'
+                ? 'border-slate-600 bg-slate-800/70 text-slate-200 placeholder:text-slate-500'
                 : 'border-slate-300 bg-paper-50 text-slate-600 placeholder:text-slate-400'
             }`}
             placeholder="Name, height (>100, <200, 50-150)"
