@@ -15,12 +15,11 @@ import {
   Tag,
 } from 'lucide-react'
 
-import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 
-import type { BasemapMode } from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { CITIES } from '@/data/cities'
-import type { MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
+import type { BasemapMode, MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
 import { BUILDING_PALETTES, HEIGHT_BANDS } from '@/lib/skyline'
 
 const LEGEND_GRADIENT = `linear-gradient(to right, ${HEIGHT_BANDS.map(
@@ -119,15 +118,19 @@ export default function CityPicker({
     return () => document.removeEventListener('mousedown', handler)
   }, [cityPickerOpen])
 
-  const groupedCities = Object.entries(
-    CITIES.reduce<Record<string, typeof CITIES>>((groups, c) => {
-      if (!groups[c.country]) groups[c.country] = []
-      groups[c.country].push(c)
-      return groups
-    }, {}),
+  const groupedCities = useMemo(
+    () =>
+      Object.entries(
+        CITIES.reduce<Record<string, typeof CITIES>>((groups, c) => {
+          if (!groups[c.country]) groups[c.country] = []
+          groups[c.country].push(c)
+          return groups
+        }, {}),
+      )
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([country, cities]) => [country, [...cities].sort((a, b) => a.name.localeCompare(b.name))] as const),
+    [],
   )
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([country, cities]) => [country, [...cities].sort((a, b) => a.name.localeCompare(b.name))] as const)
 
   return (
     <div className="panel-frost h-full w-64">

@@ -2,11 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import {
   buildSkyline,
-  DEFAULT_HIGH_COLOR,
-  DEFAULT_LOW_COLOR,
   generateBuildings,
   heightToBandColor,
-  heightToColor,
   mulberry32,
   rectFootprint,
   toSkylineBuilding,
@@ -35,32 +32,6 @@ describe('rectFootprint', () => {
     const narrowSpan = narrow[1][0] - narrow[0][0]
     const wideSpan = wide[1][0] - wide[0][0]
     expect(wideSpan).toBeGreaterThan(narrowSpan)
-  })
-})
-
-describe('heightToColor', () => {
-  it('returns the low color at or below the min', () => {
-    expect(heightToColor(0, 100, 500)).toEqual(DEFAULT_LOW_COLOR)
-    expect(heightToColor(100, 100, 500)).toEqual(DEFAULT_LOW_COLOR)
-  })
-
-  it('returns the high color at or above the max', () => {
-    expect(heightToColor(500, 100, 500)).toEqual(DEFAULT_HIGH_COLOR)
-    expect(heightToColor(900, 100, 500)).toEqual(DEFAULT_HIGH_COLOR)
-  })
-
-  it('interpolates in the middle of the range', () => {
-    const mid = heightToColor(300, 100, 500)
-    expect(mid).not.toEqual(DEFAULT_LOW_COLOR)
-    expect(mid).not.toEqual(DEFAULT_HIGH_COLOR)
-    for (const channel of mid) {
-      expect(channel).toBeGreaterThanOrEqual(0)
-      expect(channel).toBeLessThanOrEqual(255)
-    }
-  })
-
-  it('falls back to the low color for a degenerate (zero-span) domain', () => {
-    expect(heightToColor(200, 200, 200)).toEqual(DEFAULT_LOW_COLOR)
   })
 })
 

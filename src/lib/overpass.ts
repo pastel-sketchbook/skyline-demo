@@ -47,7 +47,7 @@ out geom;`
 }
 
 function encodeQuery(query: string): string {
-  return encodeURIComponent(query).replace(/[()!*']/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
+  return encodeURIComponent(query).replace(/[()!*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
 }
 
 function parseHeight(tags?: Record<string, string>): number | null {
@@ -153,6 +153,7 @@ export async function fetchBuildingsForArea(
   lng: number,
   radius: number,
   signal?: AbortSignal,
+  retries = 3,
 ): Promise<BuildingSpec[]> {
   const key = tileKey(lat, lng)
   const cached = getCachedBuildings(key)
@@ -167,9 +168,9 @@ export async function fetchBuildingsForArea(
   })
 
   if (!resp.ok) {
-    if (resp.status === 429) {
+    if (resp.status === 429 && retries > 0 && !signal?.aborted) {
       await new Promise((r) => setTimeout(r, 3000))
-      return fetchBuildingsForArea(lat, lng, radius, signal)
+      return fetchBuildingsForArea(lat, lng, radius, signal, retries - 1)
     }
     throw new Error(`Overpass HTTP ${resp.status}`)
   }

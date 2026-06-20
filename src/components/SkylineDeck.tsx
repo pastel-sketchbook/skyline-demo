@@ -6,10 +6,8 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { useMemo } from 'react'
 import { Map as MapLibreMap } from 'react-map-gl/maplibre'
 
-import type { PaletteName, SkylineBuilding } from '@/lib/skyline'
+import type { BasemapMode, PaletteName, SkylineBuilding } from '@/lib/skyline'
 import { BUILDING_PALETTES, heightToColorFromBands } from '@/lib/skyline'
-
-export type BasemapMode = 'satellite' | 'vector' | 'dark'
 
 // ESRI World Imagery satellite + reference overlay — no API key.
 const SATELLITE_STYLE: StyleSpecification = {

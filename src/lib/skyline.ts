@@ -16,6 +16,8 @@
 
 export type Rgb = [number, number, number]
 
+export type BasemapMode = 'satellite' | 'vector' | 'dark'
+
 /** A single building described by its center, footprint size, and height. */
 export interface BuildingSpec {
   id: string
@@ -72,14 +74,6 @@ export function rectFootprint(
   ]
 }
 
-function clamp(value: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, value))
-}
-
-function lerpChannel(a: number, b: number, t: number): number {
-  return Math.round(a + (b - a) * t)
-}
-
 /** Height bands with distinct colors. Teal → sand → amber → ember. */
 export const HEIGHT_BANDS: [number, number, Rgb][] = [
   [0, 30, [186, 224, 222]], // pale teal
@@ -128,26 +122,6 @@ export function heightToColorFromBands(height: number, bands: [number, number, R
  */
 export function heightToBandColor(height: number): Rgb {
   return heightToColorFromBands(height, HEIGHT_BANDS)
-}
-
-/** Default low → high gradient (light peach → deep orange). */
-export const DEFAULT_LOW_COLOR: Rgb = [255, 200, 150]
-export const DEFAULT_HIGH_COLOR: Rgb = [220, 110, 50]
-
-/**
- * Map a height to a color along a low→high gradient. Heights at or below
- * `min` get `low`; at or above `max` get `high`; values between interpolate.
- */
-export function heightToColor(
-  height: number,
-  min: number,
-  max: number,
-  low: Rgb = DEFAULT_LOW_COLOR,
-  high: Rgb = DEFAULT_HIGH_COLOR,
-): Rgb {
-  const span = max - min
-  const t = span <= 0 ? 0 : clamp((height - min) / span, 0, 1)
-  return [lerpChannel(low[0], high[0], t), lerpChannel(low[1], high[1], t), lerpChannel(low[2], high[2], t)]
 }
 
 export type TintMode = 'none' | 'warm' | 'cool' | 'sepia'

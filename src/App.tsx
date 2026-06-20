@@ -23,10 +23,8 @@ import SkylineDeck from '@/components/SkylineDeck'
 import type { City } from '@/data/cities'
 import { CITIES, DEFAULT_CITY_ID, getCity } from '@/data/cities'
 import { fetchBuildingsForArea } from '@/lib/overpass'
-import type { BuildingSpec, MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
+import type { BasemapMode, BuildingSpec, MapBgColor, PaletteName, SkylineBuilding, TintMode } from '@/lib/skyline'
 import { buildSkyline, generateBuildings } from '@/lib/skyline'
-
-export type BasemapMode = 'satellite' | 'vector' | 'dark'
 
 const TINT_STYLES: Record<TintMode, string | null> = {
   none: null,
@@ -123,6 +121,7 @@ export default function App() {
   })
   const [basemap, setBasemap] = useState<BasemapMode>('vector')
   const [realBuildings, setRealBuildings] = useState<BuildingSpec[]>([])
+  const [fetching, setFetching] = useState(false)
   const [showSkyline, setShowSkyline] = useState(true)
   const [heightExaggeration, setHeightExaggeration] = useState(1)
   const [palette, setPalette] = useState<PaletteName>('default')
@@ -156,13 +155,24 @@ export default function App() {
     setSelectedBuilding(null)
     setSeedOverride(null)
     lastFetchRef.current = null
+    setFetching(true)
 
     const center = { lat: c.center.lat, lng: c.center.lng }
     lastFetchRef.current = center
     const ac = new AbortController()
-    fetchArea(center, ac.signal, (data) => setRealBuildings(data))
+    fetchArea(center, ac.signal, (data) => {
+      setRealBuildings(data)
+      setFetching(false)
+    })
     return () => ac.abort()
   }, [cityId])
+
+  // Clean up debounce timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
 
   const buildings = useMemo(() => {
     const c = getCity(cityId)
@@ -287,7 +297,11 @@ export default function App() {
       abortRef.current?.abort()
       const ac = new AbortController()
       abortRef.current = ac
-      fetchArea({ lat, lng }, ac.signal, (data) => setRealBuildings((prev) => deduplicate([...prev, ...data])))
+      setFetching(true)
+      fetchArea({ lat, lng }, ac.signal, (data) => {
+        setRealBuildings((prev) => deduplicate([...prev, ...data]))
+        setFetching(false)
+      })
     }, 400)
   }
 
@@ -421,6 +435,9 @@ export default function App() {
           e.preventDefault()
           setTouring((prev) => !prev)
           break
+        case 'Escape':
+          setSelectedBuilding(null)
+          break
       }
     }
     window.addEventListener('keydown', handler)
@@ -506,6 +523,12 @@ export default function App() {
                 <span className="text-slate-400">Footprint</span>
                 <span className="font-medium text-slate-700">
                   {selectedBuilding.width}×{selectedBuilding.depth} m
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Location</span>
+                <span className="font-medium text-slate-700">
+                  {selectedBuilding.lat.toFixed(4)}, {selectedBuilding.lng.toFixed(4)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -701,9 +724,9 @@ export default function App() {
           <span className="h-3 w-px bg-slate-300/60" />
           <span className="inline-flex items-center gap-1.5">
             <span
-              className={`inline-block h-1.5 w-1.5 rounded-full ${realBuildings.length > 0 ? 'bg-emerald-400' : 'bg-ember-400'}`}
+              className={`inline-block h-1.5 w-1.5 rounded-full ${fetching ? 'animate-pulse bg-amber-400' : realBuildings.length > 0 ? 'bg-emerald-400' : 'bg-ember-400'}`}
             />
-            {realBuildings.length > 0 ? 'OSM live' : 'generated'}
+            {fetching ? 'fetching…' : realBuildings.length > 0 ? 'OSM live' : 'generated'}
           </span>
         </div>
       </div>
