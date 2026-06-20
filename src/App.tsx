@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   ArrowRight,
   Camera,
+  ChevronLeft,
+  ChevronRight,
   Crosshair,
   ExternalLink,
   Globe,
@@ -133,6 +135,10 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [seedOverride, setSeedOverride] = useState<number | null>(null)
   const [showLabels, setShowLabels] = useState(false)
+  const [pickerOpen, setPickerOpen] = useState(() => {
+    const params = new URLSearchParams(location.search)
+    return params.get('panel') !== '0'
+  })
 
   const lastFetchRef = useRef<{ lat: number; lng: number } | null>(null)
   const abortRef = useRef<AbortController | null>(null)
@@ -430,10 +436,11 @@ export default function App() {
       params.set('pitch', String(Math.round(viewState.pitch ?? 45)))
       params.set('bearing', String(Math.round(viewState.bearing ?? 0)))
       params.set('zoom', String((viewState.zoom ?? 15).toFixed(1)))
+      params.set('panel', pickerOpen ? '1' : '0')
       history.replaceState(null, '', `?${params.toString()}`)
     }, 500)
     return () => clearTimeout(timer)
-  }, [cityId, viewState.pitch, viewState.bearing, viewState.zoom, orbiting])
+  }, [cityId, viewState.pitch, viewState.bearing, viewState.zoom, orbiting, pickerOpen])
 
   return (
     <main className={`relative h-full w-full overflow-hidden ${MAP_BG_CLASSES[mapBgColor]}`}>
@@ -549,8 +556,15 @@ export default function App() {
         </div>
       )}
 
-      <div className="pointer-events-none absolute right-4 top-4 left-auto">
-        <div className="pointer-events-auto inline-block">
+      {/* ── Right sidebar panel (full height, togglable) ─────────── */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-20">
+        <div
+          className="pointer-events-auto relative h-full"
+          style={{
+            transform: pickerOpen ? 'translateX(0)' : 'translateX(100%)',
+            transition: 'transform 300ms cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
           <CityPicker
             city={city}
             pitch={viewState.pitch ?? 0}
@@ -587,6 +601,16 @@ export default function App() {
             showLabels={showLabels}
             onToggleLabels={() => setShowLabels((prev) => !prev)}
           />
+          <button
+            type="button"
+            onClick={() => setPickerOpen((prev) => !prev)}
+            className="absolute top-1/2 -left-6 flex h-32 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-l-lg border border-r-0 border-cyan-400 bg-gradient-to-b from-cyan-400 to-cyan-500 text-white shadow-md shadow-cyan-500/30 backdrop-blur-md transition-all hover:from-cyan-500 hover:to-cyan-600 hover:shadow-lg hover:shadow-cyan-500/40"
+            title={pickerOpen ? 'Hide panel' : 'Show panel'}
+            aria-label={pickerOpen ? 'Hide panel' : 'Show panel'}
+            aria-expanded={pickerOpen}
+          >
+            {pickerOpen ? <ChevronRight size={14} strokeWidth={1.8} /> : <ChevronLeft size={14} strokeWidth={1.8} />}
+          </button>
         </div>
       </div>
 

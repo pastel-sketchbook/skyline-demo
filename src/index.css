@@ -100,6 +100,65 @@ body {
   box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.03);
 }
 
+/* Full-height sidebar panel hugging the viewport's right edge.
+   Rounded on the left only (the right is flush with the screen),
+   shadow cast leftward so the panel reads as floating over the map.
+   overflow:hidden clips the inner scroll surface and the top accent
+   to the rounded left corners. */
+.panel-frost {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-slate-300);
+  border-right: 0;
+  border-radius: 1rem 0 0 1rem;
+  box-shadow:
+    -2px 0 4px rgba(0, 0, 0, 0.03),
+    -8px 0 24px rgba(0, 0, 0, 0.06),
+    -1px 0 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Thicker pinned top accent — a cyan shimmer marking the panel's crown.
+   Sits on the (non-scrolling) outer surface so it never scrolls away. */
+.panel-frost::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--color-cyan-400), var(--color-cyan-600), var(--color-cyan-400));
+  background-size: 200% 100%;
+  opacity: 0.85;
+  animation: shimmer-accent 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Inner scroll surface — slim, unobtrusive scrollbar. */
+.panel-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.25) transparent;
+}
+
+.panel-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 3px;
+}
+
+.panel-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.4);
+}
+
 /* ── Divider ────────────────────────────────────────────────────── */
 .divider-subtle {
   height: 1px;
